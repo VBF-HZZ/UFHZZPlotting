@@ -143,6 +143,8 @@ PlotHelper::fillHistFromVariable(Collection *myCollection,TH1F* &hist,TString my
   using namespace std;
   vector<double> myVec;
   vector<double> weight = myCollection->weight;
+  
+  double total=0.0;
 
   if(myVariable == myCollection->mass4lPair.first)
     {
@@ -164,8 +166,10 @@ PlotHelper::fillHistFromVariable(Collection *myCollection,TH1F* &hist,TString my
   for( unsigned int i = 0; i < myVec.size(); i++ )
     {
       hist->Fill(myVec[i],(double)weight[i]);
+      total += (double)weight[i];
     }
 
+  std::cout<<hist->GetName()<<" total: "<<total<<std::endl;
 
 }
 

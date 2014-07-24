@@ -80,10 +80,12 @@ if __name__ == "__main__":
   parseOptions()
   
 
-  path = '/scratch/osghpc/snowball/UF_HZZ4L_Analysis/FullAnalysis2012/MEKD_Z4L/Histogramming/rootFiles'
-#  files = ['ZZ4e_tchan.root','ZZ2e2mu_tchan.root','ZZ4mu_tchan.root']
-  files = ['ZZTo2e2mu.root','ZZTo4mu.root','ZZTo4e.root','ZZTo2e2tau.root','ZZTo2mu2tau.root','ZZTo4tau.root']
-#  files = ['ggH_91.2.root']
+  #path = '/scratch/osghpc/snowball/UF_HZZ4L_Analysis/FullAnalysis2012/MEKD_Z4L/Histogramming/rootFiles'
+  path = '/scratch/osghpc/snowball/UF_HZZ4L_Analysis/FullAnalysis2012/Histogramming_8TeV/rootFiles_Legacy_dataMC'
+  #files = ['ZZ4e_tchan.root','ZZ2e2mu_tchan.root','ZZ4mu_tchan.root']
+  #files = ['ZZTo2e2mu.root','ZZTo4mu.root','ZZTo4e.root','ZZTo2e2tau.root','ZZTo2mu2tau.root','ZZTo4tau.root']
+  files = ['ZZ_2e2mu.root','ZZ_4mu.root','ZZ_4e.root','ZZto2e2tau.root','ZZto2mu2tau.root','ZZto4tau.root','ggZZ_4l.root','ggZZ_2e2mu.root'] 
+  #files = ['ggH_91.2.root']
   
   myYield_4l = 0
   myYield_4mu = 0

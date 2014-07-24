@@ -60,7 +60,7 @@ class Collection
   double scaleWeight, eventWeight, dataMCweight;
   int idL1, idL2, idL3, idL4;
   double ptL1, ptL2, ptL3, ptL4;
-  
+  bool passedFullSelection;
 
   void fillVariables(TString fileName,TString treeName);
   std::string getName();
@@ -169,13 +169,14 @@ void Collection::fillVariables(TString fileName,TString treeName)
   tree->SetBranchAddress("dataMC_weight",&dataMCweight);
   tree->SetBranchAddress("massZ1",&massZ1);
   tree->SetBranchAddress("massZ2",&massZ2);
-  tree->SetBranchAddress("massError",&massError);
+  tree->SetBranchAddress("massErrorUFCorr",&massError);
   tree->SetBranchAddress("FSRPhot1_Pt",&FSRPhot1_Pt);
   tree->SetBranchAddress("FSRPhot2_Pt",&FSRPhot2_Pt);
   tree->SetBranchAddress("FSRPhot1_eta",&FSRPhot1_eta);
   tree->SetBranchAddress("FSRPhot2_eta",&FSRPhot2_eta);
   tree->SetBranchAddress("FSRPhot1_phi",&FSRPhot1_phi);
   tree->SetBranchAddress("FSRPhot2_phi",&FSRPhot2_phi);
+  tree->SetBranchAddress("passedFullSelection",&passedFullSelection);
 
 
   TH1F *hist = (TH1F*)file->Get("AnaAfterHlt/nEvents");
@@ -193,11 +194,14 @@ void Collection::fillVariables(TString fileName,TString treeName)
   else normEvents = hist->GetBinContent(1);
 
   nEvents = normEvents;
-
+  
+  cout<<"normEvents: "<<normEvents<<endl;
+  
   for (int i = 0; i < tree->GetEntries(); i++)
     {
       tree->GetEntry(i);
 
+      /*
       if( massZ1 < globalMZ1Low ) continue;
       if( massZ2 < globalMZ2Low ) continue;
       if( mass4l < globalM4lCut ) continue;
@@ -211,6 +215,9 @@ void Collection::fillVariables(TString fileName,TString treeName)
       if( abs(idL2) == 11 && ptL2 < globalPtElCut ) continue;
       if( abs(idL3) == 11 && ptL3 < globalPtElCut ) continue;
       if( abs(idL4) == 11 && ptL4 < globalPtElCut ) continue;
+      */
+
+      if (!passedFullSelection) continue;
 
       mass4lPair.second.push_back(mass4l);
       mass4muPair.second.push_back(mass4mu);

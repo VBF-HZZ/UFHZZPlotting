@@ -59,25 +59,31 @@ int main(int argc, char* argv[]){
   TString epsPlotDir = ToutDir+"/eps";
   TString pngPlotDir = ToutDir+"/png";
   string txtDir     = outDir+"/txt";
+ 
+  TString fileDir_7 = "rootfiles_7TeV_RMDUP";
+  TString fileDir_8 = "rootfiles_8TeV_RMDUP";
+  //TString fileDir_7 = "/scratch/osghpc/snowball/UF_HZZ4L_Analysis/FullAnalysis2012/Histogramming/rootFiles_Legacy_dataMC";
+  //TString fileDir_8 = "/scratch/osghpc/snowball/UF_HZZ4L_Analysis/FullAnalysis2012/Histogramming_8TeV/rootFiles_Legacy_dataMC";
+  //TString fileDir_8 = "/scratch/osghpc/snowball/UF_HZZ4L_Analysis/FullAnalysis2012/MEKD_Z4L/Histogramming/rootFiles";
+  //TString fileDir_7 = "../Histogramming/rootFiles_44X";
+  //TString fileDir_8 = "../Histogramming_8TeV/rootFiles_Moriond";
 
-  TString fileDir_7 = "../Histogramming/rootFiles_44X";
-  TString fileDir_8 = "../Histogramming_8TeV/rootFiles_Moriond";
-
-  TString treeName = "AnaAfterHlt/passedEvents";
-  TString treeName_7 = "AnaAfterHlt/passedEvents";
+  TString treeName = "passedEvents_dataMC";
+  TString treeName_7 = "passedEvents_dataMC";
+  TString treeName_data = "AnaAfterHlt/passedEvents";
 
   // ------------- Histograms -------------- //
 
   //lumi
-  double lumi_7 = 5.051;  
-  double lumi_8 = 19.6;  
+  double lumi_7 = 5.1;  
+  double lumi_8 = 19.7;  
 
   //whole range
   Double_t binSize = atof(argv[4]);
-  Double_t xLow4l = -5;//range of tree 
-  Double_t xHigh4l = 1005;//range of tree
-  Double_t plotXlow = atof(argv[2]);//range of plot
-  Double_t plotXhigh = atof(argv[3]);//range of plot
+  Double_t xLow4l = (float)atof(argv[2]);//range of tree 
+  Double_t xHigh4l = (float)atof(argv[3]);//range of tree
+  Double_t plotXlow = (float)atof(argv[2]);//range of plot
+  Double_t plotXhigh = (float)atof(argv[3]);//range of plot
   Int_t nBins4l = (plotXhigh-plotXlow)/binSize;
   //Double_t plotYmax = 25;
   TString yAxisLabel = (TString)"Events / "+Form("%.0f",binSize)+" GeV";
@@ -88,8 +94,8 @@ int main(int argc, char* argv[]){
   
   //low mass zoom
   Double_t binSize_zoom = atof(argv[7]);
-  Double_t xLow4l_zoom = 70;//range of tree
-  Double_t xHigh4l_zoom = 190;//range of tree
+  Double_t xLow4l_zoom = (float)atof(argv[5]);// 70 // range of tree
+  Double_t xHigh4l_zoom = (float)atof(argv[6]);// 190 //range of tree
   Double_t plotXlow_zoom = atof(argv[5]);//range of plot 
   Double_t plotXhigh_zoom = atof(argv[6]);//range of plot
   Int_t nBins4l_zoom = (plotXhigh_zoom-plotXlow_zoom)/binSize_zoom;
@@ -129,35 +135,36 @@ int main(int argc, char* argv[]){
   double scale126_4l = scale126_4e+scale126_4mu+scale126_2e2mu;
 
 
+
   // 7 TeV
-  //Collection *CggH126_7    = new Collection("mH126",fileDir_8+"/mH_126_ggH.root"     ,treeName,lumi_7,false,massZ1Cut,massZ2Cut,m4lCut);
-  //Collection *CVBF126_7    = new Collection("mH126",fileDir_8+"/mH_126_VBF.root"     ,treeName,lumi_7,false,massZ1Cut,massZ2Cut,m4lCut);
-  Collection *CggH350_7    = new Collection("mH350ggH",fileDir_7+"/mH_350_ggH.root"  ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *CVBF350_7    = new Collection("mH350VBF",fileDir_7+"/mH_350_VBF.root"  ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *Czz4mu_7     = new Collection("ZZ4mu",fileDir_7+"/ZZ_4mu.root"         ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *Czz4e_7      = new Collection("ZZ4e",fileDir_7+"/ZZ_4e.root"           ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *Czz2e2mu_7   = new Collection("ZZ2e2mu",fileDir_7+"/ZZ_2e2mu.root"     ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *Czz4tau_7    = new Collection("ZZ4tau",fileDir_7+"/ZZto4tau.root"      ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *Czz2e2tau_7  = new Collection("ZZ2e2tau",fileDir_7+"/ZZto2e2tau.root"  ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *Czz2mu2tau_7 = new Collection("ZZ2mu2tau",fileDir_7+"/ZZto2mu2tau.root",treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *Cggzz4l_7    = new Collection("ggZZ4l",fileDir_7+"/ggZZ_4l.root"       ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *Cggzz2l2l_7  = new Collection("ggZZ2l2l",fileDir_7+"/ggZZ_2e2mu.root"  ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *Cdata_7      = new Collection("Data",fileDir_7+"/Data.root"            ,treeName_7,1,true,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  //Collection *CggH126_7    = new Collection("mH126",fileDir_8+ "/mH_126_ggH.root"     ,treeName,lumi_7,false,massZ1Cut,massZ2Cut,m4lCut);
+  //Collection *CVBF126_7    = new Collection("mH126",fileDir_8+ "/mH_126_VBF.root"     ,treeName,lumi_7,false,massZ1Cut,massZ2Cut,m4lCut);
+  Collection *CggH350_7    = new Collection("mH350ggH",fileDir_7+ "/mH_350_ggH.root"  ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *CVBF350_7    = new Collection("mH350VBF",fileDir_7+ "/mH_350_VBF.root"  ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Czz4mu_7     = new Collection("ZZ4mu",fileDir_7+ "/ZZ_4mu.root"         ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Czz4e_7      = new Collection("ZZ4e",fileDir_7+ "/ZZ_4e.root"           ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Czz2e2mu_7   = new Collection("ZZ2e2mu",fileDir_7+ "/ZZ_2e2mu.root"     ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Czz4tau_7    = new Collection("ZZ4tau",fileDir_7+ "/ZZto4tau.root"      ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Czz2e2tau_7  = new Collection("ZZ2e2tau",fileDir_7+ "/ZZto2e2tau.root"  ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Czz2mu2tau_7 = new Collection("ZZ2mu2tau",fileDir_7+ "/ZZto2mu2tau.root" ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Cggzz4l_7    = new Collection("ggZZ4l",fileDir_7+ "/ggZZ_4l.root"       ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Cggzz2l2l_7  = new Collection("ggZZ2l2l",fileDir_7+ "/ggZZ_2e2mu.root"  ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Cdata_7      = new Collection("Data",fileDir_7+ "/Data.root"            ,treeName_data,1,true,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
 
   // 8 TeV
-  Collection *CggH126_8    = new Collection("mH126",fileDir_8+"/mH_126_ggH.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *CVBF126_8    = new Collection("mH126",fileDir_8+"/mH_126_VBF.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *CggH350_8    = new Collection("mH350ggH",fileDir_8+"/mH_350_ggH.root"  ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *CVBF350_8    = new Collection("mH350VBF",fileDir_8+"/mH_350_VBF.root"  ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *Czz4mu_8     = new Collection("ZZ4mu",fileDir_8+"/ZZ_4mu.root"         ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *Czz4e_8      = new Collection("ZZ4e",fileDir_8+"/ZZ_4e.root"           ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *Czz2e2mu_8   = new Collection("ZZ2e2mu",fileDir_8+"/ZZ_2e2mu.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *Czz4tau_8    = new Collection("ZZ4tau",fileDir_8+"/ZZto4tau.root"      ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *Czz2e2tau_8  = new Collection("ZZ2e2tau",fileDir_8+"/ZZto2e2tau.root"  ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *Czz2mu2tau_8 = new Collection("ZZ2mu2tau",fileDir_8+"/ZZto2mu2tau.root",treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *Cggzz4l_8    = new Collection("ggZZ4l",fileDir_7+"/ggZZ_4l.root"       ,treeName_7,lumi_8*1.18,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *Cggzz2l2l_8  = new Collection("ggZZ2l2l",fileDir_7+"/ggZZ_2e2mu.root"  ,treeName_7,lumi_8*1.18,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *Cdata_8      = new Collection("Data",fileDir_8+"/Data.root"            ,treeName,1,true,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *CggH126_8    = new Collection("mH126",fileDir_8+ "/mH_126_ggH.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *CVBF126_8    = new Collection("mH126",fileDir_8+ "/mH_126_VBF.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *CggH350_8    = new Collection("mH350ggH",fileDir_8+ "/mH_350_ggH.root"  ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *CVBF350_8    = new Collection("mH350VBF",fileDir_8+ "/mH_350_VBF.root"  ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Czz4mu_8     = new Collection("ZZ4mu",fileDir_8+ "/ZZ_4mu.root"         ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Czz4e_8      = new Collection("ZZ4e",fileDir_8+ "/ZZ_4e.root"           ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Czz2e2mu_8   = new Collection("ZZ2e2mu",fileDir_8+ "/ZZ_2e2mu.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Czz4tau_8    = new Collection("ZZ4tau",fileDir_8+ "/ZZto4tau.root"      ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Czz2e2tau_8  = new Collection("ZZ2e2tau",fileDir_8+ "/ZZto2e2tau.root"  ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Czz2mu2tau_8 = new Collection("ZZ2mu2tau",fileDir_8+ "/ZZto2mu2tau.root" ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Cggzz4l_8    = new Collection("ggZZ4l",fileDir_7+ "/ggZZ_4l.root"       ,treeName_7,lumi_8*1.18,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Cggzz2l2l_8  = new Collection("ggZZ2l2l",fileDir_7+ "/ggZZ_2e2mu.root"  ,treeName_7,lumi_8*1.18,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Cdata_8      = new Collection("Data",fileDir_8+ "/Data.root"            ,treeName_data,1,true,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
 
 
 
@@ -238,9 +245,13 @@ int main(int argc, char* argv[]){
   helper->getAsymErr(histm4l_data_zoom,histm4l_dataE_zoom);
     
   helper->fillHistFromVariable(MCZZ,histm4l_ZZ_zoom,"mass4l");
+  std::cout<<"histm4l_ZZ_zoom: "<<histm4l_ZZ_zoom->Integral()<<std::endl;
   helper->fillHistFromVariable(MCH350,histm4l_h350_zoom,"mass4l");
+  std::cout<<"histm4l_h350_zoom: "<<histm4l_h350_zoom->Integral()<<std::endl;
   helper->fillHistFromVariable(MCH126,histm4l_h126_zoom,"mass4l");
+  std::cout<<"histm4l_h126_zoom: "<<histm4l_h126_zoom->Integral()<<std::endl;
   histm4l_h126_zoom->Scale(scale126_4l/histm4l_h126_zoom->Integral());
+  std::cout<<"histm4l_h126scaled_zoom: "<<histm4l_h126_zoom->Integral()<<std::endl;
 
   helper->setHistProperties(histm4l_ZZ_zoom,ZZBgColor,1001,helper->filled);
   helper->setHistProperties(histm4l_ZX_zoom,redBgColor,1001,helper->filled);
@@ -453,9 +464,13 @@ int main(int argc, char* argv[]){
   helper->getAsymErr(histm4l_data,histm4l_dataE);
     
   helper->fillHistFromVariable(MCZZ,histm4l_ZZ,"mass4l");
+  std::cout<<"histm4l_ZZ: "<<histm4l_ZZ->Integral()<<std::endl;
   helper->fillHistFromVariable(MCH350,histm4l_h350,"mass4l");
+  std::cout<<"histm4l_h350: "<<histm4l_h350->Integral()<<std::endl;
   helper->fillHistFromVariable(MCH126,histm4l_h126,"mass4l");
+  std::cout<<"histm4l_h126: "<<histm4l_h126->Integral()<<std::endl;
   histm4l_h126->Scale(scale126_4l/histm4l_h126->Integral());
+  std::cout<<"histm4l_h126scaled: "<<histm4l_h126->Integral()<<std::endl;
 
   helper->setHistProperties(histm4l_ZZ,ZZBgColor,1001,helper->filled);
   helper->setHistProperties(histm4l_ZX,redBgColor,1001,helper->filled);

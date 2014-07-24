@@ -64,8 +64,8 @@ def makeHists():
     myPlotXlow =      [60,  60]
     myPlotXhigh =     [600, 800]
     myBinSize =       [10,  10]
-    myPlotXlowZoom =  [70,  70]
-    myPlotXhighZoom = [170, 190]
+    myPlotXlowZoom =  [70,  70.5]
+    myPlotXhighZoom = [170, 181.5]
     myBinSizeZoom =   [3,   3]
     ############################
 

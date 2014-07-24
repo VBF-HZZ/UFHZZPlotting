@@ -17,11 +17,11 @@ def parseOptions():
   
   parser.add_option('-b', action='store_true', dest='noX', default=True ,help='no X11 windows')
   parser.add_option('-d', '--dir', dest='dir', type='string', default='Zto4LPlots' ,help='output directory')
-  parser.add_option('-s', '--sqrts', dest='sqrts', type='int', default=7 ,help='sqrts = 7,8,0')
-  parser.add_option('-l', '--xlow', dest='xLow', type='float', default=50 ,help='Low mass cut off')
-  parser.add_option('-t', '--xhigh', dest='xHigh', type='float', default=110 ,help='High mass cut off')
-  parser.add_option('--dataMC', action='store_true', dest='dataMCWeight', default=False ,help='Include data/MC scaling')
-  parser.add_option('-z', '--massz2', dest='MASSZ2', type='float', default=4 ,help='Mass of Z2')
+  parser.add_option('-s', '--sqrts', dest='sqrts', type='int', default=0 ,help='sqrts = 7,8,0')
+  parser.add_option('-l', '--xlow', dest='xLow', type='float', default=70.5 ,help='Low mass cut off')
+  parser.add_option('-t', '--xhigh', dest='xHigh', type='float', default=181.5 ,help='High mass cut off')
+  parser.add_option('--dataMC', action='store_true', dest='dataMCWeight', default=True ,help='Include data/MC scaling')
+  parser.add_option('-z', '--massz2', dest='MASSZ2', type='float', default=12 ,help='Mass of Z2')
   parser.add_option('--ptmu', dest='PTMU', type='float', default=5 ,help='pT of muons')
   parser.add_option('--ptel', dest='PTEL', type='float', default=7 ,help='pT of electrons')
   
@@ -88,7 +88,7 @@ def getVectors(file,isMC,lumi,mass4mu,weight4mu,mass4e,weight4e,mass2e2mu,weight
     weight = 1
     if isMC:
       if opt.dataMCWeight:
-        weight = tree.scaleWeight*tree.eventWeight*tree.dataMCweight*lumi*1000/norm        
+        weight = tree.scaleWeight*tree.eventWeight*tree.dataMC_weight*lumi*1000/norm        
       else:
         weight = tree.scaleWeight*tree.eventWeight*lumi*1000/norm
         
@@ -188,7 +188,7 @@ def getAsymErr(h,gr):
 def makePlot(listMassMC, listWeightMC, listData,chan):
   global opt, args
 
-  binwidth = 2
+  binwidth = 3
   nBins = (opt.xHigh-opt.xLow)/binwidth
 
   scaleBG = 1
@@ -445,9 +445,8 @@ if __name__ == "__main__":
   parseOptions()
   ROOT.gROOT.ProcessLine(".L include/tdrstyle.cc")
   
-
-  path7 = "../Histogramming/rootFiles_Legacy_dataMC/"
-  path8 = "../Histogramming_8TeV/rootFiles_Legacy_dataMC/"
+  path7 = "/scratch/osghpc/snowball/UF_HZZ4L_Analysis/FullAnalysis2012/Histogramming/rootFiles_Legacy_dataMC/"
+  path8 = "/scratch/osghpc/snowball/UF_HZZ4L_Analysis/FullAnalysis2012/Histogramming_8TeV/rootFiles_Legacy_dataMC/"
   #path7 = "../Histogramming/Moriond/rootFiles_Moriond_dataMC/"
   #path8 = "../Histogramming_8TeV/Moriond/rootFiles_Moriond_dataMC/"
 
