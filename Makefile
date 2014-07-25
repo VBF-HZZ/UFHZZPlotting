@@ -54,7 +54,7 @@ test: test.o
 	$(CXX) -o test.exe test.o $(LIBS)
 
 clean:
-	@rm *.o *.exe *~ 
+	@rm *.o *.exe  
 
 
 ##############RULES##############

@@ -301,9 +301,12 @@ PlotHelper::getHistFromTF1(TF1* &funcFit, TH1F* &hist, double norm)
   double rangeX1 = hist->GetXaxis()->GetXmin();
   for (Int_t i = 1; i <= hist->GetNbinsX(); i++) 
     {
-      hist->SetBinContent(i,funcFit->Integral(rangeX1+(i-1)*xwidth,rangeX1+(i)*xwidth)/xwidth);
+      if (norm>0.0) hist->SetBinContent(i,funcFit->Integral(rangeX1+(i-1)*xwidth,rangeX1+(i)*xwidth)/xwidth);
+      else hist->SetBinContent(i,funcFit->Integral(rangeX1+(i-1)*xwidth,rangeX1+(i)*xwidth));
+    
     }
-  hist->Scale(norm/hist->Integral());
+
+  if (norm>0.0) hist->Scale(norm/hist->Integral());
 
 }
 

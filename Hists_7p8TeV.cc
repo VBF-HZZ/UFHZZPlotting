@@ -104,12 +104,34 @@ int main(int argc, char* argv[]){
   double percentMaxBin = 1.5;
 
   //reducible background
-  Double_t  nBgEvents_4mu = 1.0+3.2;
-  Double_t  nBgEvents_4e = 1.6+5.0;
-  Double_t  nBgEvents_2e2mu = 2.6+7.1;
+  Double_t  nBgEvents_4mu = 11.5;//11.54;//3.67;//0.58+3.09;
+  Double_t  nBgEvents_4e = 3.6;//3.67;//7.46;//1.37+6.09;
+  Double_t  nBgEvents_2e2mu = 7.4;//7.46;//11.54; //2.29+9.25;
   Double_t  nBgEvents = nBgEvents_4mu+nBgEvents_4e+nBgEvents_2e2mu;
-  Double_t  l_mu = 142.6;
-  Double_t  l_sigma = 19.8;
+  Double_t  l_4e_p0 = 1.0; //norm
+  Double_t  l_4e_p1 = 0.117024;  // normalisation of landau1  (i.e. 2P2F)
+  Double_t  l_4e_p2 = 195.407;   // MPV of Landau1
+  Double_t  l_4e_p3 = 38.9472;   // sigma of Landau
+  Double_t  l_4e_p4 = 3.68476;    // a  in pol1 = a + bx
+  Double_t  l_4e_p5 = -0.00580439;    // b  in pol1 = a + bx
+  Double_t  l_4e_p6 = 2.57278;     // normalisation of Landau2  (i.e. 3P1F)
+  Double_t  l_4e_p7 = 110.862;     // MPV of Landau2
+  Double_t  l_4e_p8 = 9.59455;     // sigma of Laudau2
+  Double_t  l_4mu_p0 = 1.0; // norm
+  Double_t  l_4mu_p1 = 129.0;  // MPV
+  Double_t  l_4mu_p2 = 15.0;  // sigma
+  Double_t  l_2e2mu_p0 = 1.0;  // norm
+  Double_t  l_2e2mu_p1 = 0.00439895;  // normalisation of landau1  (i.e. 2P2F 2mu2e)
+  Double_t  l_2e2mu_p2 = 195.407;     // MPV of Landau1
+  Double_t  l_2e2mu_p3 = 38.9472;     // sigma of Landau
+  Double_t  l_2e2mu_p4 = 3.68476;     // a  in pol1 = a + bx
+  Double_t  l_2e2mu_p5 = -0.00580439;     // b  in pol1 = a + bx
+  Double_t  l_2e2mu_p6 = 1.92769;     // normalisation of Landau2  (i.e. 3P1F 2mu2e)
+  Double_t  l_2e2mu_p7 = 110.862;     // MPV of Landau2
+  Double_t  l_2e2mu_p8 = 9.59455;     // sigma of Laudau2
+  Double_t  l_2e2mu_p9 = 1.;               // normalisation of Landau3  (i.e. 2e2mu), set to one by convention
+  Double_t  l_2e2mu_p10 = 129;            // MPV of Landau3
+  Double_t  l_2e2mu_p11 = 15.0;            // sigma of Landau3   
   
   //cuts
   double massZ1Cut = 40;
@@ -226,9 +248,72 @@ int main(int argc, char* argv[]){
   // ================================================================================================= //
   double plotYmax, plotYmax_zoom;
 
-  TF1 *redBgFunc_4l = new TF1("redBgFunc_4l","TMath::Landau(x,[0],[1],0)", plotXlow,plotXhigh);
-  redBgFunc_4l->FixParameter(0,l_mu);
-  redBgFunc_4l->FixParameter(1,l_sigma);
+  TF1* redBgFunc_4e = new TF1("redBgFunc_4e", "[0]*(landau(1) * (1 + exp( pol1(4))) + landau(6))", 10, 1000);
+  redBgFunc_4e->FixParameter(0,l_4e_p0);
+  redBgFunc_4e->FixParameter(1,l_4e_p1);
+  redBgFunc_4e->FixParameter(2,l_4e_p2);
+  redBgFunc_4e->FixParameter(3,l_4e_p3);
+  redBgFunc_4e->FixParameter(4,l_4e_p4);
+  redBgFunc_4e->FixParameter(5,l_4e_p5);
+  redBgFunc_4e->FixParameter(6,l_4e_p6);
+  redBgFunc_4e->FixParameter(7,l_4e_p7);
+  redBgFunc_4e->FixParameter(8,l_4e_p8);
+
+  TF1* redBgFunc_4mu = new TF1("redBgFunc_4mu", "landau", 10, 1000);
+  redBgFunc_4mu->FixParameter(0,l_4mu_p0);
+  redBgFunc_4mu->FixParameter(1,l_4mu_p1);
+  redBgFunc_4mu->FixParameter(2,l_4mu_p2);
+
+  TF1* redBgFunc_2e2mu = new TF1("redBgFunc_2e2mu", "[0]*(landau(1) * (1 + exp( pol1(4))) + landau(6) + landau(9))", 10, 1000);
+  redBgFunc_2e2mu->FixParameter(0,l_2e2mu_p0);
+  redBgFunc_2e2mu->FixParameter(1,l_2e2mu_p1);
+  redBgFunc_2e2mu->FixParameter(2,l_2e2mu_p2);
+  redBgFunc_2e2mu->FixParameter(3,l_2e2mu_p3);
+  redBgFunc_2e2mu->FixParameter(4,l_2e2mu_p4);
+  redBgFunc_2e2mu->FixParameter(5,l_2e2mu_p5);
+  redBgFunc_2e2mu->FixParameter(6,l_2e2mu_p6);
+  redBgFunc_2e2mu->FixParameter(7,l_2e2mu_p7);
+  redBgFunc_2e2mu->FixParameter(8,l_2e2mu_p8);
+  redBgFunc_2e2mu->FixParameter(9,l_2e2mu_p9);
+  redBgFunc_2e2mu->FixParameter(10,l_2e2mu_p10);
+  redBgFunc_2e2mu->FixParameter(11,l_2e2mu_p11);
+
+  //norm
+  l_4e_p0 = nBgEvents_4e/redBgFunc_4e->Integral(10, 2000);
+  l_4mu_p0 = nBgEvents_4mu/redBgFunc_4mu->Integral(10, 2000);
+  l_2e2mu_p0 = nBgEvents_2e2mu/redBgFunc_2e2mu->Integral(10, 2000);
+
+  redBgFunc_4e->FixParameter(0,l_4e_p0);
+  redBgFunc_4mu->FixParameter(0,l_4mu_p0);
+  redBgFunc_2e2mu->FixParameter(0,l_2e2mu_p0);
+
+  // 4l
+  TF1* redBgFunc_4l = new TF1("redBgFunc_4l", "[0]*(landau(1) * (1 + exp( pol1(4))) + landau(6))+landau(9)+[12]*(landau(13) * (1 + exp( pol1(16))) + landau(18) + landau(21))", 10, 1000);
+  redBgFunc_4l->FixParameter(0,l_4e_p0);
+  redBgFunc_4l->FixParameter(1,l_4e_p1);
+  redBgFunc_4l->FixParameter(2,l_4e_p2);
+  redBgFunc_4l->FixParameter(3,l_4e_p3);
+  redBgFunc_4l->FixParameter(4,l_4e_p4);
+  redBgFunc_4l->FixParameter(5,l_4e_p5);
+  redBgFunc_4l->FixParameter(6,l_4e_p6);
+  redBgFunc_4l->FixParameter(7,l_4e_p7);
+  redBgFunc_4l->FixParameter(8,l_4e_p8);
+  redBgFunc_4l->FixParameter(9,l_4mu_p0);
+  redBgFunc_4l->FixParameter(10,l_4mu_p1);
+  redBgFunc_4l->FixParameter(11,l_4mu_p2);
+  redBgFunc_4l->FixParameter(12,l_2e2mu_p0);
+  redBgFunc_4l->FixParameter(13,l_2e2mu_p1);
+  redBgFunc_4l->FixParameter(14,l_2e2mu_p2);
+  redBgFunc_4l->FixParameter(15,l_2e2mu_p3);
+  redBgFunc_4l->FixParameter(16,l_2e2mu_p4);
+  redBgFunc_4l->FixParameter(17,l_2e2mu_p5);
+  redBgFunc_4l->FixParameter(18,l_2e2mu_p6);
+  redBgFunc_4l->FixParameter(19,l_2e2mu_p7);
+  redBgFunc_4l->FixParameter(20,l_2e2mu_p8);
+  redBgFunc_4l->FixParameter(21,l_2e2mu_p9);
+  redBgFunc_4l->FixParameter(22,l_2e2mu_p10);
+  redBgFunc_4l->FixParameter(23,l_2e2mu_p11);
+
 
   // ------------ m4l --------------- //
   TH1F* histm4l_h126_zoom = new TH1F("m4l_h126_zoom","Mass of 4 leptons; m_{4l} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
@@ -237,7 +322,7 @@ int main(int argc, char* argv[]){
 
   
   TH1F* histm4l_ZX_zoom = new TH1F("m4l_ZX_zoom","Mass of 4 leptons; m_{4l} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom); 
-  helper->getHistFromTF1(redBgFunc_4l,histm4l_ZX_zoom,nBgEvents);
+  helper->getHistFromTF1(redBgFunc_4l,histm4l_ZX_zoom,-1);
 
   TH1F* histm4l_data_zoom = new TH1F("m4l_data_zoom","Mass of 4 leptons; m_{4l} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
   helper->fillHistFromVariable(MCData,histm4l_data_zoom,"mass4l");
@@ -298,7 +383,7 @@ int main(int argc, char* argv[]){
   TH1F* histm4e_ZZ_zoom = new TH1F("m4e_ZZ_zoom","Mass of 4 leptons; m_{4e} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
   
   TH1F* histm4e_ZX_zoom = new TH1F("m4e_ZX_zoom","Mass of 4 leptons; m_{4e} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom); 
-  helper->getHistFromTF1(redBgFunc_4l,histm4e_ZX_zoom,nBgEvents_4e);
+  helper->getHistFromTF1(redBgFunc_4e,histm4e_ZX_zoom, nBgEvents_4e);
 
   TH1F* histm4e_data_zoom = new TH1F("m4e_data_zoom","Mass of 4 leptons; m_{4e} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
   helper->fillHistFromVariable(MCData,histm4e_data_zoom,"mass4e");
@@ -349,7 +434,7 @@ int main(int argc, char* argv[]){
   TH1F* histm4mu_ZZ_zoom = new TH1F("m4mu_ZZ_zoom","Mass of 4 leptons; m_{4#mu} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
   
   TH1F* histm4mu_ZX_zoom = new TH1F("m4mu_ZX_zoom","Mass of 4 leptons; m_{4#mu} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom); 
-  helper->getHistFromTF1(redBgFunc_4l,histm4mu_ZX_zoom,nBgEvents_4mu);
+  helper->getHistFromTF1(redBgFunc_4mu,histm4mu_ZX_zoom,nBgEvents_4mu);
 
   TH1F* histm4mu_data_zoom = new TH1F("m4mu_data_zoom","Mass of 4 leptons; m_{4#mu} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
   helper->fillHistFromVariable(MCData,histm4mu_data_zoom,"mass4mu");
@@ -402,7 +487,7 @@ int main(int argc, char* argv[]){
   TH1F* histm2e2mu_ZZ_zoom = new TH1F("m2e2mu_ZZ_zoom","Mass of 4 leptons; m_{2e2#mu} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
   
   TH1F* histm2e2mu_ZX_zoom = new TH1F("m2e2mu_ZX_zoom","Mass of 4 leptons; m_{2e2#mu} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom); 
-  helper->getHistFromTF1(redBgFunc_4l,histm2e2mu_ZX_zoom,nBgEvents_2e2mu);
+  helper->getHistFromTF1(redBgFunc_2e2mu,histm2e2mu_ZX_zoom,nBgEvents_2e2mu);
 
   TH1F* histm2e2mu_data_zoom = new TH1F("m2e2mu_data_zoom","Mass of 4 leptons; m_{2e2#mu} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
   helper->fillHistFromVariable(MCData,histm2e2mu_data_zoom,"mass2e2mu");
@@ -514,7 +599,7 @@ int main(int argc, char* argv[]){
   TH1F* histm4e_ZZ = new TH1F("m4e_ZZ","Mass of 4 leptons; m_{4e} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
   
   TH1F* histm4e_ZX = new TH1F("m4e_ZX","Mass of 4 leptons; m_{4e} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l); 
-  helper->getHistFromTF1(redBgFunc_4l,histm4e_ZX,nBgEvents_4e);
+  helper->getHistFromTF1(redBgFunc_4e,histm4e_ZX,nBgEvents_4e);
 
   TH1F* histm4e_data = new TH1F("m4e_data","Mass of 4 leptons; m_{4e} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
   helper->fillHistFromVariable(MCData,histm4e_data,"mass4e");
@@ -565,7 +650,7 @@ int main(int argc, char* argv[]){
   TH1F* histm4mu_ZZ = new TH1F("m4mu_ZZ","Mass of 4 leptons; m_{4#mu} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
   
   TH1F* histm4mu_ZX = new TH1F("m4mu_ZX","Mass of 4 leptons; m_{4#mu} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l); 
-  helper->getHistFromTF1(redBgFunc_4l,histm4mu_ZX,nBgEvents_4mu);
+  helper->getHistFromTF1(redBgFunc_4mu,histm4mu_ZX,nBgEvents_4mu);
 
   TH1F* histm4mu_data = new TH1F("m4mu_data","Mass of 4 leptons; m_{4#mu} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
   helper->fillHistFromVariable(MCData,histm4mu_data,"mass4mu");
@@ -620,7 +705,7 @@ int main(int argc, char* argv[]){
   TH1F* histm2e2mu_ZZ = new TH1F("m2e2mu_ZZ","Mass of 4 leptons; m_{2e2#mu} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
   
   TH1F* histm2e2mu_ZX = new TH1F("m2e2mu_ZX","Mass of 4 leptons; m_{2e2#mu} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l); 
-  helper->getHistFromTF1(redBgFunc_4l,histm2e2mu_ZX,nBgEvents_2e2mu);
+  helper->getHistFromTF1(redBgFunc_2e2mu,histm2e2mu_ZX,nBgEvents_2e2mu);
 
   TH1F* histm2e2mu_data = new TH1F("m2e2mu_data","Mass of 4 leptons; m_{2e2#mu} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
   helper->fillHistFromVariable(MCData,histm2e2mu_data,"mass2e2mu");
