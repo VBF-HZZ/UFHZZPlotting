@@ -71,6 +71,7 @@ int main(int argc, char* argv[]){
   TString treeName = "passedEvents_dataMC";
   TString treeName_7 = "passedEvents_dataMC";
   TString treeName_data = "AnaAfterHlt/passedEvents";
+  TString treeName_data_7 = "passedEventsNoDuplicate";
 
   // ------------- Histograms -------------- //
 
@@ -171,7 +172,10 @@ int main(int argc, char* argv[]){
   Collection *Czz2mu2tau_7 = new Collection("ZZ2mu2tau",fileDir_7+ "/ZZto2mu2tau.root" ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *Cggzz4l_7    = new Collection("ggZZ4l",fileDir_7+ "/ggZZ_4l.root"       ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *Cggzz2l2l_7  = new Collection("ggZZ2l2l",fileDir_7+ "/ggZZ_2e2mu.root"  ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *Cdata_7      = new Collection("Data",fileDir_7+ "/Data.root"            ,treeName_data,1,true,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  //Collection *Cdata_7      = new Collection("Data",fileDir_7+ "/Data.root"            ,treeName_data,1,true,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  //Collection *Cdata_7      = new Collection("Data",fileDir_7+ "/Data_7TeV_MuEG_RMDUP.root"            ,treeName_data,1,true,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  //Collection *Cdata_7      = new Collection("Data",fileDir_7+ "/Data_7TeV_RMDUP.root"            ,treeName_data,1,true,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Cdata_7      = new Collection("Data",fileDir_7+ "/Data_7TeV.root"            ,treeName_data_7,1,true,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
 
   // 8 TeV
   Collection *CggH126_8    = new Collection("mH126",fileDir_8+ "/mH_126_ggH.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
