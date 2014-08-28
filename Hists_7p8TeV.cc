@@ -192,6 +192,7 @@ int main(int argc, char* argv[]){
   Collection *Czz2mu2tau_8 = new Collection("ZZ2mu2tau",fileDir_8+ "/ZZto2mu2tau.root" ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *Cggzz4l_8    = new Collection("ggZZ4l",fileDir_7+ "/ggZZ_4l.root"       ,treeName_7,lumi_8*1.18,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *Cggzz2l2l_8  = new Collection("ggZZ2l2l",fileDir_7+ "/ggZZ_2e2mu.root"  ,treeName_7,lumi_8*1.18,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+Collection *CZZJetsTo4L_8     = new Collection("ZZJetsTo4L",fileDir_8+ "/ZZJetsTo4L.root"         ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *Cdata_8      = new Collection("Data",fileDir_8+ "/Data_8TeV.root"            ,treeName_data,1,true,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
 
 
