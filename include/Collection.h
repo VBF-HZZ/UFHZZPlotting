@@ -48,7 +48,7 @@ class Collection
 {
 
  public:
-  Collection(std::string collectionName, TString fileName, TString treeName, double lumi,bool isData, double mZ1LowCut, double mZ2LowCut, double ptMuCut, double ptElCut, double m4lCut);
+  Collection(std::string collectionName, TString fileName, TString treeName, double lumi,bool isData, double mZ1LowCut, double mZ2LowCut, double ptMuCut, double ptElCut, double m4lCut, double newWeight);
   ~Collection();
 
   dv weight;
@@ -62,7 +62,7 @@ class Collection
   double ptL1, ptL2, ptL3, ptL4;
   bool passedFullSelection;
 
-  void fillVariables(TString fileName,TString treeName);
+  void fillVariables(TString fileName,TString treeName, double newWeight);
   std::string getName();
 
   pair<TString,dv> mass4lPair;
@@ -96,7 +96,7 @@ class Collection
 #ifndef COLLECTION_CC
 #define COLLECTION_CC
 
-Collection::Collection(std::string collectionName, TString fileName, TString treeName, double lumi,bool isData=false, double mZ1LowCut=40, double mZ2LowCut=4, double ptMuCut=5, double ptElCut=7, double m4lCut=0)
+Collection::Collection(std::string collectionName, TString fileName, TString treeName, double lumi,bool isData=false, double mZ1LowCut=40, double mZ2LowCut=4, double ptMuCut=5, double ptElCut=7, double m4lCut=0, double newWeight=1.0)
 {
 
   globalName = collectionName;
@@ -109,7 +109,7 @@ Collection::Collection(std::string collectionName, TString fileName, TString tre
   globalM4lCut = m4lCut;
   globalPtMuCut = ptMuCut;
   globalPtElCut = ptElCut;
-  fillVariables(globalFileName,globalTreeName);
+  fillVariables(globalFileName,globalTreeName,newWeight);
 
   mass4lPair.first = "mass4l";
   mass4ePair.first = "mass4e";
@@ -134,7 +134,7 @@ Collection::~Collection()
 
 
 
-void Collection::fillVariables(TString fileName,TString treeName)
+void Collection::fillVariables(TString fileName,TString treeName, double newWeight)
 {
   using namespace std;
 
@@ -227,7 +227,7 @@ void Collection::fillVariables(TString fileName,TString treeName)
       massZ2Pair.second.push_back(massZ2);
       massErrPair.second.push_back(massError);
       if(globalIsData) weight.push_back(1);
-      else weight.push_back(scaleWeight*eventWeight*dataMCweight*(globalLumi*1000)/normEvents);
+      else weight.push_back(scaleWeight*eventWeight*dataMCweight*(globalLumi*1000)/normEvents*newWeight);
       //else weight.push_back(scaleWeight*(globalLumi*1000)/normEvents);
       
     }

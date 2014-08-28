@@ -50,10 +50,10 @@ class PlotHelper
   enum DrawStyle{line,filled,markers};
 
 
-  void fillHistFromVariable(Collection *myCollection,TH1F* &hist,TString myVariable);
-  void fillHistFromVariable(MergedCollection *myCollection,TH1F* &hist,TString myVariable);
+  void fillHistFromVariable(Collection *myCollection,TH1F* &hist,TString myVariable, double newWeight);
+  void fillHistFromVariable(MergedCollection *myCollection,TH1F* &hist,TString myVariable, double newWeight);
   void setHistProperties(TH1F* &hist,Color_t color,Style_t fillStyle,DrawStyle draw,Style_t markerStyle=20);
-  void setStackStyle(THStack* &hist,TString xTitle, TString yTitle);
+  void setStackStyle(THStack* hist,TString xTitle, TString yTitle);
   void clearHist(TH1F* &hist);
   std::vector<TGraphAsymmErrors*> getAsymErr(std::vector<TH1F*> h);
   void getHistFromTF1(TF1* &funcFit, TH1F* &histFit, double norm);
@@ -137,13 +137,14 @@ PlotHelper::~PlotHelper(){
 
 
 void 
-PlotHelper::fillHistFromVariable(Collection *myCollection,TH1F* &hist,TString myVariable)
+PlotHelper::fillHistFromVariable(Collection *myCollection,TH1F* &hist,TString myVariable, double newWeight=1.0)
 {
 
   using namespace std;
   vector<double> myVec;
   vector<double> weight = myCollection->weight;
-  
+  for (int i=0; i<(int)weight.size(); i++) weight.at(i) *= newWeight;  
+
   double total=0.0;
 
   if(myVariable == myCollection->mass4lPair.first)
@@ -174,12 +175,13 @@ PlotHelper::fillHistFromVariable(Collection *myCollection,TH1F* &hist,TString my
 }
 
 void 
-PlotHelper::fillHistFromVariable(MergedCollection *myCollection,TH1F* &hist,TString myVariable)
+PlotHelper::fillHistFromVariable(MergedCollection *myCollection,TH1F* &hist,TString myVariable, double newWeight=1.0)
 {
 
   using namespace std;
   vector<double> myVec;
   vector<double> weight = myCollection->weight;
+  for (int i=0; i<(int)weight.size(); i++) weight.at(i) *= newWeight;
 
   if(myVariable == myCollection->mass4lPair.first)
     {
@@ -336,7 +338,7 @@ PlotHelper::setHistProperties(TH1F* &hist,Color_t color,Style_t fillStyle,DrawSt
 }
 
 void 
-PlotHelper::setStackStyle(THStack* &hist,TString xTitle, TString yTitle)
+PlotHelper::setStackStyle(THStack* hist,TString xTitle, TString yTitle)
 {
   double ytitleOffset = 1.36;
   double xtitleOffset = 1.18;
@@ -2016,11 +2018,11 @@ PlotHelper::draw7p8Plot(THStack *stack, TGraphAsymmErrors *gr, TLegend *leg, TLa
 {
   TCanvas *c = new TCanvas("c","c",canvasX,canvasY);
   c->cd();
+  if(yMax != 999) stack->SetMaximum(yMax);
   stack->Draw();
   setStackStyle(stack,xTitle,yTitle);
-  gr->Draw("pSAME");
-  if(yMax != 999) stack->SetMaximum(yMax);
   if(xLow != 999 && xHigh != 999) stack->GetXaxis()->SetRangeUser(xLow,xHigh);
+  gr->Draw("pSAME");
   leg->Draw("SAME");
   gPad->SetTicks(1,1);
   c->Update();
@@ -2039,11 +2041,11 @@ PlotHelper::draw7p8Plot(THStack *stack,TH1F* gr, TLegend *leg, TLatex *latex,TSt
 
   TCanvas *c = new TCanvas("c","c",canvasX,canvasY);
   c->cd();
+  if(yMax != 999) stack->SetMaximum(yMax);
   stack->Draw();
+  if(xLow != 999 && xHigh != 999) stack->GetXaxis()->SetRangeUser(xLow,xHigh);
   setStackStyle(stack,xTitle,yTitle);
   gr->Draw("e1pSAME");
-  if(yMax != 999) stack->SetMaximum(yMax);
-  if(xLow != 999 && xHigh != 999) stack->GetXaxis()->SetRangeUser(xLow,xHigh);
   leg->Draw("SAME");
   gPad->SetTicks(1,1);
   c->Update();

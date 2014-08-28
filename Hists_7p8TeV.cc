@@ -43,9 +43,11 @@ typedef std::vector<ULong64_t> uv;
 typedef std::vector<TString> tsv;
 typedef std::vector<std::string> stringv;
 
-int main(int argc, char* argv[]){
+double nevents_data(0);
+double nevents_mc(0);
 
-  using namespace std;
+
+int main(int argc, char* argv[]){
 
   if (argc != 9){
     cout << "Usage: ./makeHists7p8TeV.exe <fileDir> <plotXlow> <plotXhigh> <binSize> <plotXlow_zoom> <plotXhigh_zoom> <binSize_zoom> <print data>" << endl;
@@ -76,8 +78,8 @@ int main(int argc, char* argv[]){
   // ------------- Histograms -------------- //
 
   //lumi
-  double lumi_7 = 5.1;  
-  double lumi_8 = 19.7;  
+  double lumi_7 = 5.051;  
+  double lumi_8 = 19.712;  
 
   //whole range
   Double_t binSize = atof(argv[4]);
@@ -86,7 +88,7 @@ int main(int argc, char* argv[]){
   Double_t plotXlow = (float)atof(argv[2]);//range of plot
   Double_t plotXhigh = (float)atof(argv[3]);//range of plot
   Int_t nBins4l = (plotXhigh-plotXlow)/binSize;
-  //Double_t plotYmax = 25;
+  Double_t plotYmax = 36;
   TString yAxisLabel = (TString)"Events / "+Form("%.0f",binSize)+" GeV";
   TString xAxisLabel_m4l = "m_{4l} [GeV]";
   TString xAxisLabel_m4e = "m_{4e} [GeV]";
@@ -100,7 +102,7 @@ int main(int argc, char* argv[]){
   Double_t plotXlow_zoom = atof(argv[5]);//range of plot 
   Double_t plotXhigh_zoom = atof(argv[6]);//range of plot
   Int_t nBins4l_zoom = (plotXhigh_zoom-plotXlow_zoom)/binSize_zoom;
-  //Double_t plotYmax_zoom = 20;
+  Double_t plotYmax_zoom = 36;
   TString yAxisLabel_zoom = (TString)"Events / "+Form("%.0f",binSize_zoom)+" GeV";
   double percentMaxBin = 1.5;
 
@@ -178,7 +180,7 @@ int main(int argc, char* argv[]){
   Collection *Cdata_7      = new Collection("Data",fileDir_7+ "/Data_7TeV.root"            ,treeName_data_7,1,true,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
 
   // 8 TeV
-  Collection *CggH126_8    = new Collection("mH126",fileDir_8+ "/mH_126_ggH.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *CggH126_8    = new Collection("mH126",fileDir_8+ "/mH_126_ggH_powheg15.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *CVBF126_8    = new Collection("mH126",fileDir_8+ "/mH_126_VBF.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *CggH350_8    = new Collection("mH350ggH",fileDir_8+ "/mH_350_ggH.root"  ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *CVBF350_8    = new Collection("mH350VBF",fileDir_8+ "/mH_350_VBF.root"  ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
@@ -190,7 +192,7 @@ int main(int argc, char* argv[]){
   Collection *Czz2mu2tau_8 = new Collection("ZZ2mu2tau",fileDir_8+ "/ZZto2mu2tau.root" ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *Cggzz4l_8    = new Collection("ggZZ4l",fileDir_7+ "/ggZZ_4l.root"       ,treeName_7,lumi_8*1.18,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *Cggzz2l2l_8  = new Collection("ggZZ2l2l",fileDir_7+ "/ggZZ_2e2mu.root"  ,treeName_7,lumi_8*1.18,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *Cdata_8      = new Collection("Data",fileDir_8+ "/Data.root"            ,treeName_data,1,true,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Cdata_8      = new Collection("Data",fileDir_8+ "/Data_8TeV.root"            ,treeName_data,1,true,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
 
 
 
@@ -213,10 +215,14 @@ int main(int argc, char* argv[]){
   cvZZ.push_back(Cggzz2l2l_7);
   cvZZ.push_back(Cggzz4l_8);
   cvZZ.push_back(Cggzz2l2l_8);
-  cvggzz.push_back(Cggzz4l_7);
-  cvggzz.push_back(Cggzz2l2l_7);
-  cvggzz.push_back(Cggzz4l_8);
-  cvggzz.push_back(Cggzz2l2l_8);
+  //cvggzz.push_back(Cggzz4l_7);
+  //cvggzz.push_back(Cggzz2l2l_7);
+  //cvggzz.push_back(Cggzz4l_8);
+  //cvggzz.push_back(Cggzz2l2l_8);
+  cvZZ.push_back(Cggzz4l_7);
+  cvZZ.push_back(Cggzz2l2l_7);
+  cvZZ.push_back(Cggzz4l_8);
+  cvZZ.push_back(Cggzz2l2l_8);
   cvH350.push_back(CggH350_7);
   cvH350.push_back(CVBF350_7);
   cvH350.push_back(CggH350_8);
@@ -250,7 +256,6 @@ int main(int argc, char* argv[]){
   CP->SetTextAlign(11);
 
   // ================================================================================================= //
-  double plotYmax, plotYmax_zoom;
 
   TF1* redBgFunc_4e = new TF1("redBgFunc_4e", "[0]*(landau(1) * (1 + exp( pol1(4))) + landau(6))", 10, 1000);
   redBgFunc_4e->FixParameter(0,l_4e_p0);
@@ -342,6 +347,16 @@ int main(int argc, char* argv[]){
   histm4l_h126_zoom->Scale(scale126_4l/histm4l_h126_zoom->Integral());
   std::cout<<"histm4l_h126scaled_zoom: "<<histm4l_h126_zoom->Integral()<<std::endl;
 
+  // test give 2 events for ZZ background and 1 event more to Signal:
+  //histm4l_ZZ_zoom->Scale((7.5+histm4l_ZZ_zoom->Integral())/histm4l_ZZ_zoom->Integral());
+  //histm4l_h126_zoom->Scale((2.0+histm4l_h126_zoom->Integral())/histm4l_h126_zoom->Integral());
+
+  nevents_data = histm4l_data_zoom->Integral();
+  nevents_mc = histm4l_ZZ_zoom->Integral();
+  nevents_mc += histm4l_ZX_zoom->Integral();
+  nevents_mc += histm4l_h126_zoom->Integral();
+  std::cout << "Integral Data: " <<  nevents_data << "; Integral MC: " << nevents_mc << std::endl;
+
   helper->setHistProperties(histm4l_ZZ_zoom,ZZBgColor,1001,helper->filled);
   helper->setHistProperties(histm4l_ZX_zoom,redBgColor,1001,helper->filled);
   helper->setHistProperties(histm4l_h126_zoom,h126Color,1001,helper->line);
@@ -360,25 +375,25 @@ int main(int argc, char* argv[]){
   highestBin_m4lz.push_back(helper->findHighestBin(histm4l_h350_zoom));
   highestBin_m4lz.push_back(helper->findHighestBin(histm4l_data_zoom));
 
-  for(unsigned int k = 0; k < highestBin_m4lz.size(); k++)
-    {
-      if(percentMaxBin*highestBin_m4lz[k] > plotYmax_zoom) plotYmax_zoom = percentMaxBin*highestBin_m4lz[k];
-    }
+//  for(unsigned int k = 0; k < highestBin_m4lz.size(); k++)
+//    {
+//      if(percentMaxBin*highestBin_m4lz[k] > plotYmax_zoom) plotYmax_zoom = percentMaxBin*highestBin_m4lz[k];
+//    }
 
 
 
-  THStack *stackM4l_zoom = new THStack();
+  THStack *stackM4l_zoom = new THStack("stackM4l_zoom", "stackM4l_zoom");
   stackM4l_zoom->Add(histm4l_ZX_zoom);
   stackM4l_zoom->Add(histm4l_ZZ_zoom);
   stackM4l_zoom->Add(histm4l_h126_zoom);
   //stackM4l_zoom->Add(histm4l_h350_zoom);
 
+  plotYmax_zoom = 35.5;
   helper->draw7p8Plot(stackM4l_zoom,histm4l_dataE_zoom,leg,CP,pngPlotDir+"/m4l_"+Form("%.0f",plotXlow_zoom)+"_"+Form("%.0f",plotXhigh_zoom)+".png",
-		   xAxisLabel_m4l,yAxisLabel_zoom,lumi_7,lumi_8,plotXlow_zoom,plotXhigh_zoom,plotYmax_zoom);
+	   xAxisLabel_m4l,yAxisLabel_zoom,lumi_7,lumi_8,plotXlow_zoom,plotXhigh_zoom,plotYmax_zoom);
   helper->draw7p8Plot(stackM4l_zoom,histm4l_dataE_zoom,leg,CP,epsPlotDir+"/m4l_"+Form("%.0f",plotXlow_zoom)+"_"+Form("%.0f",plotXhigh_zoom)+".eps",
 		   xAxisLabel_m4l,yAxisLabel_zoom,lumi_7,lumi_8,plotXlow_zoom,plotXhigh_zoom,plotYmax_zoom);
 
-  plotYmax_zoom = 0;
 
 
   // ------------- m4e ------------ //
@@ -412,10 +427,10 @@ int main(int argc, char* argv[]){
   highestBin_m4ez.push_back(helper->findHighestBin(histm4e_h350_zoom));
   highestBin_m4ez.push_back(helper->findHighestBin(histm4e_data_zoom));
 
-  for(unsigned int k = 0; k < highestBin_m4ez.size(); k++)
-    {
-      if(percentMaxBin*highestBin_m4ez[k] > plotYmax_zoom) plotYmax_zoom = percentMaxBin*highestBin_m4ez[k];
-    }
+ // for(unsigned int k = 0; k < highestBin_m4ez.size(); k++)
+ //   {
+ //     if(percentMaxBin*highestBin_m4ez[k] > plotYmax_zoom) plotYmax_zoom = percentMaxBin*highestBin_m4ez[k];
+//    }
 
 
   THStack *stackM4e_zoom = new THStack();
@@ -424,12 +439,12 @@ int main(int argc, char* argv[]){
   stackM4e_zoom->Add(histm4e_h126_zoom);
   //stackM4e_zoom->Add(histm4e_h350_zoom);
 
+  plotYmax_zoom = 29.5;
   helper->draw7p8Plot(stackM4e_zoom,histm4e_dataE_zoom,leg,CP,pngPlotDir+"/m4e_"+Form("%.0f",plotXlow_zoom)+"_"+Form("%.0f",plotXhigh_zoom)+".png",
 		      xAxisLabel_m4e,yAxisLabel_zoom,lumi_7,lumi_8,plotXlow_zoom,plotXhigh_zoom,plotYmax_zoom);
   helper->draw7p8Plot(stackM4e_zoom,histm4e_dataE_zoom,leg,CP,epsPlotDir+"/m4e_"+Form("%.0f",plotXlow_zoom)+"_"+Form("%.0f",plotXhigh_zoom)+".eps",
 		      xAxisLabel_m4e,yAxisLabel_zoom,lumi_7,lumi_8,plotXlow_zoom,plotXhigh_zoom,plotYmax_zoom);
 
-  plotYmax_zoom = 0;
 
 
   // ------------ m4mu ------------- //
@@ -463,10 +478,10 @@ int main(int argc, char* argv[]){
   highestBin_m4muz.push_back(helper->findHighestBin(histm4mu_h350_zoom));
   highestBin_m4muz.push_back(helper->findHighestBin(histm4mu_data_zoom));
 
-  for(unsigned int k = 0; k < highestBin_m4muz.size(); k++)
-    {
-      if(percentMaxBin*highestBin_m4muz[k] > plotYmax_zoom) plotYmax_zoom = percentMaxBin*highestBin_m4muz[k];
-    }
+//  for(unsigned int k = 0; k < highestBin_m4muz.size(); k++)
+//    {
+//      if(percentMaxBin*highestBin_m4muz[k] > plotYmax_zoom) plotYmax_zoom = percentMaxBin*highestBin_m4muz[k];
+//    }
 
 
   THStack *stackM4mu_zoom = new THStack();
@@ -475,14 +490,13 @@ int main(int argc, char* argv[]){
   stackM4mu_zoom->Add(histm4mu_h126_zoom);
   //stackM4mu_zoom->Add(histm4mu_h350_zoom);
 
-
+  plotYmax_zoom = 29.5;
   helper->draw7p8Plot(stackM4mu_zoom,histm4mu_dataE_zoom,leg,CP,pngPlotDir+"/m4mu_"+Form("%.0f",plotXlow_zoom)+"_"+Form("%.0f",plotXhigh_zoom)+".png",
 		      xAxisLabel_m4mu,yAxisLabel_zoom,lumi_7,lumi_8,plotXlow_zoom,plotXhigh_zoom,plotYmax_zoom);
   helper->draw7p8Plot(stackM4mu_zoom,histm4mu_dataE_zoom,leg,CP,epsPlotDir+"/m4mu_"+Form("%.0f",plotXlow_zoom)+"_"+Form("%.0f",plotXhigh_zoom)+".eps",
 		      xAxisLabel_m4mu,yAxisLabel_zoom,lumi_7,lumi_8,plotXlow_zoom,plotXhigh_zoom,plotYmax_zoom);
 
 
-  plotYmax_zoom = 0;
 
 
   // ------------ m2e2mu ------------- //
@@ -516,10 +530,10 @@ int main(int argc, char* argv[]){
   highestBin_m2e2muz.push_back(helper->findHighestBin(histm2e2mu_h350_zoom));
   highestBin_m2e2muz.push_back(helper->findHighestBin(histm2e2mu_data_zoom));
 
-  for(unsigned int k = 0; k < highestBin_m2e2muz.size(); k++)
-    {
-      if(percentMaxBin*highestBin_m2e2muz[k] > plotYmax_zoom) plotYmax_zoom = percentMaxBin*highestBin_m2e2muz[k];
-    }
+//  for(unsigned int k = 0; k < highestBin_m2e2muz.size(); k++)
+//    {
+//      if(percentMaxBin*highestBin_m2e2muz[k] > plotYmax_zoom) plotYmax_zoom = percentMaxBin*highestBin_m2e2muz[k];
+//    }
 
 
   THStack *stackM2e2mu_zoom = new THStack();
@@ -528,13 +542,13 @@ int main(int argc, char* argv[]){
   stackM2e2mu_zoom->Add(histm2e2mu_h126_zoom);
   //stackM2e2mu_zoom->Add(histm2e2mu_h350_zoom);
 
-  
+  plotYmax_zoom = 29.5; 
   helper->draw7p8Plot(stackM2e2mu_zoom,histm2e2mu_dataE_zoom,leg,CP,pngPlotDir+"/m2e2mu_"+Form("%.0f",plotXlow_zoom)+"_"+Form("%.0f",plotXhigh_zoom)+".png",
 		      xAxisLabel_m2e2mu,yAxisLabel_zoom,lumi_7,lumi_8,plotXlow_zoom,plotXhigh_zoom,plotYmax_zoom);
   helper->draw7p8Plot(stackM2e2mu_zoom,histm2e2mu_dataE_zoom,leg,CP,epsPlotDir+"/m2e2mu_"+Form("%.0f",plotXlow_zoom)+"_"+Form("%.0f",plotXhigh_zoom)+".eps",
 		      xAxisLabel_m2e2mu,yAxisLabel_zoom,lumi_7,lumi_8,plotXlow_zoom,plotXhigh_zoom,plotYmax_zoom);
   
-  plotYmax_zoom = 0;
+//  plotYmax_zoom = 0;
 
   // ================================================================================================= //
 
@@ -577,10 +591,10 @@ int main(int argc, char* argv[]){
   highestBin_m4l.push_back(helper->findHighestBin(histm4l_h350));
   highestBin_m4l.push_back(helper->findHighestBin(histm4l_data));
 
-  for(unsigned int k = 0; k < highestBin_m4l.size(); k++)
-    {
-      if(percentMaxBin*highestBin_m4l[k] > plotYmax) plotYmax = percentMaxBin*highestBin_m4l[k];
-    }
+//  for(unsigned int k = 0; k < highestBin_m4l.size(); k++)
+//    {
+//      if(percentMaxBin*highestBin_m4l[k] > plotYmax) plotYmax = percentMaxBin*highestBin_m4l[k];
+//    }
 
 
   THStack *stackM4l = new THStack();
@@ -595,7 +609,7 @@ int main(int argc, char* argv[]){
   helper->draw7p8Plot(stackM4l,histm4l_dataE,leg,CP,epsPlotDir+"/m4l_"+Form("%.0f",plotXlow)+"_"+Form("%.0f",plotXhigh)+".eps",
 		      xAxisLabel_m4l,yAxisLabel,lumi_7,lumi_8,plotXlow,plotXhigh,plotYmax);
   
-  plotYmax = 0;
+//  plotYmax = 0;
 
   // ------------- m4e ------------ //
   TH1F* histm4e_h126 = new TH1F("m4e_h126","Mass of 4 leptons; m_{4e} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
@@ -628,10 +642,10 @@ int main(int argc, char* argv[]){
   highestBin_m4e.push_back(helper->findHighestBin(histm4e_h350));
   highestBin_m4e.push_back(helper->findHighestBin(histm4e_data));
 
-  for(unsigned int k = 0; k < highestBin_m4e.size(); k++)
-    {
-      if(percentMaxBin*highestBin_m4e[k] > plotYmax) plotYmax = percentMaxBin*highestBin_m4e[k];
-    }
+//  for(unsigned int k = 0; k < highestBin_m4e.size(); k++)
+//    {
+//      if(percentMaxBin*highestBin_m4e[k] > plotYmax) plotYmax = percentMaxBin*highestBin_m4e[k];
+//    }
 
   THStack *stackM4e = new THStack();
   stackM4e->Add(histm4e_ZX);
@@ -639,14 +653,14 @@ int main(int argc, char* argv[]){
   stackM4e->Add(histm4e_h126);
   //stackM4e->Add(histm4e_h350);
 
-  plotYmax = 50;
+ // plotYmax = 50;
 
   helper->draw7p8Plot(stackM4e,histm4e_dataE,leg,CP,pngPlotDir+"/m4e_"+Form("%.0f",plotXlow)+"_"+Form("%.0f",plotXhigh)+".png",
 		      xAxisLabel_m4e,yAxisLabel,lumi_7,lumi_8,plotXlow,plotXhigh,plotYmax);
   helper->draw7p8Plot(stackM4e,histm4e_dataE,leg,CP,epsPlotDir+"/m4e_"+Form("%.0f",plotXlow)+"_"+Form("%.0f",plotXhigh)+".eps",
 		      xAxisLabel_m4e,yAxisLabel,lumi_7,lumi_8,plotXlow,plotXhigh,plotYmax);
   
-  plotYmax = 0;
+//  plotYmax = 0;
 
   // ------------ m4mu ------------- //
   TH1F* histm4mu_h126 = new TH1F("m4mu_h126","Mass of 4 leptons; m_{4#mu} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
@@ -680,10 +694,10 @@ int main(int argc, char* argv[]){
   highestBin_m4mu.push_back(helper->findHighestBin(histm4mu_h350));
   highestBin_m4mu.push_back(helper->findHighestBin(histm4mu_data));
 
-  for(unsigned int k = 0; k < highestBin_m4mu.size(); k++)
-    {
-      if(percentMaxBin*highestBin_m4mu[k] > plotYmax) plotYmax = percentMaxBin*highestBin_m4mu[k];
-    }
+//  for(unsigned int k = 0; k < highestBin_m4mu.size(); k++)
+//    {
+//      if(percentMaxBin*highestBin_m4mu[k] > plotYmax) plotYmax = percentMaxBin*highestBin_m4mu[k];
+//    }
 
 
 
@@ -693,7 +707,7 @@ int main(int argc, char* argv[]){
   stackM4mu->Add(histm4mu_h126);
   //stackM4mu->Add(histm4mu_h350);
 
-  plotYmax = 50;
+//  plotYmax = 50;
 
 
   helper->draw7p8Plot(stackM4mu,histm4mu_dataE,leg,CP,pngPlotDir+"/m4mu_"+Form("%.0f",plotXlow)+"_"+Form("%.0f",plotXhigh)+".png",
@@ -701,7 +715,7 @@ int main(int argc, char* argv[]){
   helper->draw7p8Plot(stackM4mu,histm4mu_dataE,leg,CP,epsPlotDir+"/m4mu_"+Form("%.0f",plotXlow)+"_"+Form("%.0f",plotXhigh)+".eps",
 		      xAxisLabel_m4mu,yAxisLabel,lumi_7,lumi_8,plotXlow,plotXhigh,plotYmax);
 
-  plotYmax = 0;
+//  plotYmax = 0;
 
   // ------------ m2e2mu ------------- //
   TH1F* histm2e2mu_h126 = new TH1F("m2e2mu_h126","Mass of 4 leptons; m_{2e2#mu} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
@@ -734,10 +748,10 @@ int main(int argc, char* argv[]){
   highestBin_m2e2mu.push_back(helper->findHighestBin(histm2e2mu_h350));
   highestBin_m2e2mu.push_back(helper->findHighestBin(histm2e2mu_data));
 
-  for(unsigned int k = 0; k < highestBin_m2e2mu.size(); k++)
-    {
-      if(percentMaxBin*highestBin_m2e2mu[k] > plotYmax) plotYmax = percentMaxBin*highestBin_m2e2mu[k];
-    }
+//  for(unsigned int k = 0; k < highestBin_m2e2mu.size(); k++)
+//    {
+//      if(percentMaxBin*highestBin_m2e2mu[k] > plotYmax) plotYmax = percentMaxBin*highestBin_m2e2mu[k];
+//    }
 
 
   THStack *stackM2e2mu = new THStack();
@@ -746,14 +760,14 @@ int main(int argc, char* argv[]){
   stackM2e2mu->Add(histm2e2mu_h126);
   //stackM2e2mu->Add(histm2e2mu_h350);
 
-  plotYmax = 50;
+//  plotYmax = 50;
 
   helper->draw7p8Plot(stackM2e2mu,histm2e2mu_dataE,leg,CP,pngPlotDir+"/m2e2mu_"+Form("%.0f",plotXlow)+"_"+Form("%.0f",plotXhigh)+".png",
 		      xAxisLabel_m2e2mu,yAxisLabel,lumi_7,lumi_8,plotXlow,plotXhigh,plotYmax);
   helper->draw7p8Plot(stackM2e2mu,histm2e2mu_dataE,leg,CP,epsPlotDir+"/m2e2mu_"+Form("%.0f",plotXlow)+"_"+Form("%.0f",plotXhigh)+".eps",
 		      xAxisLabel_m2e2mu,yAxisLabel,lumi_7,lumi_8,plotXlow,plotXhigh,plotYmax);
 
-  plotYmax = 0;
+//  plotYmax = 0;
 
   return 0;
 
