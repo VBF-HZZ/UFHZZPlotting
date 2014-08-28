@@ -10,7 +10,7 @@ INSS=-I./include
 
 LD1=-L$(ROOFITSYS)/lib
 
-CFLAGS += `root-config --cflags`
+CFLAGS += `root-config --cflags` -g 
 LIBS += `root-config --glibs`
 
 LDa=-lRooFitCore
