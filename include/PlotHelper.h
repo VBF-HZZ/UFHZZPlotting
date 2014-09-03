@@ -50,8 +50,8 @@ class PlotHelper
   enum DrawStyle{line,filled,markers};
 
 
-  void fillHistFromVariable(Collection *myCollection,TH1F* &hist,TString myVariable, double newWeight);
-  void fillHistFromVariable(MergedCollection *myCollection,TH1F* &hist,TString myVariable, double newWeight);
+  int fillHistFromVariable(Collection *myCollection,TH1F* &hist,TString myVariable, double newWeight);
+  int fillHistFromVariable(MergedCollection *myCollection,TH1F* &hist,TString myVariable, double newWeight);
   void setHistProperties(TH1F* &hist,Color_t color,Style_t fillStyle,DrawStyle draw,Style_t markerStyle=20);
   void setStackStyle(THStack* hist,TString xTitle, TString yTitle);
   void clearHist(TH1F* &hist);
@@ -136,10 +136,11 @@ PlotHelper::~PlotHelper(){
 }
 
 
-void 
+int
 PlotHelper::fillHistFromVariable(Collection *myCollection,TH1F* &hist,TString myVariable, double newWeight=1.0)
 {
 
+  hist->Sumw2();
   using namespace std;
   vector<double> myVec;
   vector<double> weight = myCollection->weight;
@@ -163,20 +164,28 @@ PlotHelper::fillHistFromVariable(Collection *myCollection,TH1F* &hist,TString my
     {
       myVec = myCollection->mass2e2muPair.second;
     }
-  
+
+  int Entries = 0;
+  double min = hist->GetXaxis()->GetXmin();
+  double max = hist->GetXaxis()->GetXmax();  
+
   for( unsigned int i = 0; i < myVec.size(); i++ )
     {
       hist->Fill(myVec[i],(double)weight[i]);
       total += (double)weight[i];
+      if (myVec[i]>min&&myVec[i]<max) Entries++;
     }
 
   std::cout<<hist->GetName()<<" total: "<<total<<std::endl;
 
+  return Entries;
+
 }
 
-void 
+int
 PlotHelper::fillHistFromVariable(MergedCollection *myCollection,TH1F* &hist,TString myVariable, double newWeight=1.0)
 {
+  hist->Sumw2();
 
   using namespace std;
   vector<double> myVec;
@@ -199,12 +208,18 @@ PlotHelper::fillHistFromVariable(MergedCollection *myCollection,TH1F* &hist,TStr
     {
       myVec = myCollection->mass2e2muPair.second;
     }
+
   
+  int Entries=0;
+  double min = hist->GetXaxis()->GetXmin();
+  double max = hist->GetXaxis()->GetXmax();
   for( unsigned int i = 0; i < myVec.size(); i++ )
     {
       hist->Fill(myVec[i],(double)weight[i]);
+      if (myVec[i]>min&&myVec[i]<max) Entries++;
     }
 
+  return Entries;
 
 }
 
@@ -1771,9 +1786,8 @@ PlotHelper::printCollectionYield(MergedCollection *myCol, ofstream &out, double 
 std::vector<double> 
 PlotHelper::getCollectionYield(Collection *myCol, double mZ1Low, double mZ2Low, double m4lLow, double m4lHigh)
 {
-
-
   double nEvents_4l=0,nEvents_4e=0,nEvents_4mu=0,nEvents_2e2mu=0;
+  double Entries_4l=0,Entries_4e=0,Entries_4mu=0,Entries_2e2mu=0;
 
   for(unsigned int i = 0; i < myCol->mass4lPair.second.size(); i++)
     {
@@ -1782,10 +1796,10 @@ PlotHelper::getCollectionYield(Collection *myCol, double mZ1Low, double mZ2Low, 
       if(myCol->mass4lPair.second[i] < m4lLow) continue;
       if(myCol->mass4lPair.second[i] > m4lHigh) continue;
       
-      nEvents_4l += myCol->weight[i];
-      if(myCol->mass4ePair.second[i] > 0    ) nEvents_4e    += myCol->weight[i];
-      if(myCol->mass4muPair.second[i] > 0   ) nEvents_4mu   += myCol->weight[i];
-      if(myCol->mass2e2muPair.second[i] > 0 ) nEvents_2e2mu += myCol->weight[i];
+      nEvents_4l += myCol->weight[i]; Entries_4l+=1.0;
+      if(myCol->mass4ePair.second[i] > 0    ) { nEvents_4e    += myCol->weight[i]; Entries_4e+=1.; }
+      if(myCol->mass4muPair.second[i] > 0   ) { nEvents_4mu   += myCol->weight[i]; Entries_4mu+=1.; }
+      if(myCol->mass2e2muPair.second[i] > 0 ) { nEvents_2e2mu += myCol->weight[i]; Entries_2e2mu+=1.; }
 
     }
 
@@ -1795,6 +1809,10 @@ PlotHelper::getCollectionYield(Collection *myCol, double mZ1Low, double mZ2Low, 
   mv.push_back(nEvents_4mu);
   mv.push_back(nEvents_4e);
   mv.push_back(nEvents_2e2mu);
+  mv.push_back(Entries_4l);
+  mv.push_back(Entries_4mu);
+  mv.push_back(Entries_4e);
+  mv.push_back(Entries_2e2mu);
 
   return mv;
 
@@ -1816,6 +1834,7 @@ PlotHelper::getCollectionYield(MergedCollection *myCol, double mZ1Low, double mZ
 {
 
   double nEvents_4l=0,nEvents_4e=0,nEvents_4mu=0,nEvents_2e2mu=0;
+  double Entries_4l=0,Entries_4e=0,Entries_4mu=0,Entries_2e2mu=0;
 
   for(unsigned int i = 0; i < myCol->mass4lPair.second.size(); i++)
     {
@@ -1824,10 +1843,10 @@ PlotHelper::getCollectionYield(MergedCollection *myCol, double mZ1Low, double mZ
       if(myCol->mass4lPair.second[i] < m4lLow) continue;
       if(myCol->mass4lPair.second[i] > m4lHigh) continue;
       
-      nEvents_4l += myCol->weight[i];
-      if(myCol->mass4ePair.second[i] > 0    ) nEvents_4e    += myCol->weight[i];
-      if(myCol->mass4muPair.second[i] > 0   ) nEvents_4mu   += myCol->weight[i];
-      if(myCol->mass2e2muPair.second[i] > 0 ) nEvents_2e2mu += myCol->weight[i];
+      nEvents_4l += myCol->weight[i]; Entries_4l+=1.0;
+      if(myCol->mass4ePair.second[i] > 0    ) { nEvents_4e    += myCol->weight[i]; Entries_4e+=1.; }
+      if(myCol->mass4muPair.second[i] > 0   ) { nEvents_4mu   += myCol->weight[i]; Entries_4mu+=1.; }
+      if(myCol->mass2e2muPair.second[i] > 0 ) { nEvents_2e2mu += myCol->weight[i]; Entries_2e2mu+=1.; }
 
     }
 
@@ -1837,6 +1856,10 @@ PlotHelper::getCollectionYield(MergedCollection *myCol, double mZ1Low, double mZ
   mv.push_back(nEvents_4mu);
   mv.push_back(nEvents_4e);
   mv.push_back(nEvents_2e2mu);
+  mv.push_back(Entries_4l);
+  mv.push_back(Entries_4mu);
+  mv.push_back(Entries_4e);
+  mv.push_back(Entries_2e2mu);
 
   /*
   out << myCol->getName() << " [" << m4lLow << "," << m4lHigh << "] " << endl;

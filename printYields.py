@@ -1,4 +1,4 @@
-#!/usr/bin/python
+
 import sys, os, pwd, commands
 import optparse, shlex, re
 import math
@@ -8,12 +8,12 @@ from array import array
 
 
 def parseOptions():
-  
+  print "parseOptions"  
   usage = ('usage: %prog [options] datasetList\n'
            + '%prog -h for help')
   parser = optparse.OptionParser(usage)
   
-  parser.add_option('-b', action='store_true', dest='noX', default=True ,help='no X11 windows')
+  #parser.add_option('-b', action='store_true', dest='noX', default=True ,help='no X11 windows')
   parser.add_option('--xlow', dest='xLow', type='float', default=86 ,help='Low mass cut off')
   parser.add_option('--xhigh', dest='xHigh', type='float', default=96 ,help='High mass cut off')
   
@@ -39,20 +39,21 @@ def getYield(fileName, treeName, histName, lumi, isData):
   
   for i in range( tree.GetEntries() ):
     tree.GetEntry(i)
-    
-    if not tree.passedZ4lSelection: continue
-    if tree.massZ2 < 4: continue
+ 
+    if not tree.passedFullSelection: continue   
+#    if not tree.passedZ4lSelection: continue
+#    if tree.massZ2 < 4: continue
     if tree.mass4l < opt.xLow or tree.mass4l > opt.xHigh: continue
-#    if not tree.passedQCDcut: continue
-    if tree.pTL1 < 5 and math.fabs(tree.idL1) == 13: continue
-    if tree.pTL2 < 5 and math.fabs(tree.idL2) == 13: continue
-    if tree.pTL3 < 5 and math.fabs(tree.idL3) == 13: continue
-    if tree.pTL4 < 5 and math.fabs(tree.idL4) == 13: continue
-
-    if tree.pTL1 < 7 and math.fabs(tree.idL1) == 11: continue
-    if tree.pTL2 < 7 and math.fabs(tree.idL2) == 11: continue
-    if tree.pTL3 < 7 and math.fabs(tree.idL3) == 11: continue
-    if tree.pTL4 < 7 and math.fabs(tree.idL4) == 11: continue
+##    if not tree.passedQCDcut: continue
+#    if tree.pTL1 < 5 and math.fabs(tree.idL1) == 13: continue
+#    if tree.pTL2 < 5 and math.fabs(tree.idL2) == 13: continue
+#    if tree.pTL3 < 5 and math.fabs(tree.idL3) == 13: continue
+#    if tree.pTL4 < 5 and math.fabs(tree.idL4) == 13: continue
+#
+#    if tree.pTL1 < 7 and math.fabs(tree.idL1) == 11: continue
+#    if tree.pTL2 < 7 and math.fabs(tree.idL2) == 11: continue
+#    if tree.pTL3 < 7 and math.fabs(tree.idL3) == 11: continue
+#    if tree.pTL4 < 7 and math.fabs(tree.idL4) == 11: continue
 
     
     if isData:
@@ -76,6 +77,7 @@ def getYield(fileName, treeName, histName, lumi, isData):
 
 
 if __name__ == "__main__":
+  print "main()"
   global opt, args
   parseOptions()
   
@@ -86,6 +88,7 @@ if __name__ == "__main__":
   #files = ['ZZ4e_tchan.root','ZZ2e2mu_tchan.root','ZZ4mu_tchan.root']
   #files = ['ZZTo2e2mu.root','ZZTo4mu.root','ZZTo4e.root','ZZTo2e2tau.root','ZZTo2mu2tau.root','ZZTo4tau.root']
   files = ['ZZ_2e2mu.root','ZZ_4mu.root','ZZ_4e.root','ZZto2e2tau.root','ZZto2mu2tau.root','ZZto4tau.root','ggZZ_4l.root','ggZZ_2e2mu.root'] 
+  #files = ['Data_8TeV.root']
   #files = ['ggH_91.2.root']
   
   myYield_4l = 0
@@ -95,7 +98,11 @@ if __name__ == "__main__":
 
   for i in range(len(files)):
     print files[i]
-    myYields = getYield(path+'/'+files[i], "passedEvents_dataMC","AnaAfterHlt/nEvents", 19.7, False)
+    if files[i] == "ggZZ_2e2mu.root" :  
+      myYields = getYield(path+'/'+files[i], "passedEvents_dataMC","AnaAfterHlt/nEvents", 19.7*0.1, False)
+    else :
+      myYields = getYield(path+'/'+files[i], "passedEvents_dataMC","AnaAfterHlt/nEvents", 19.7, False)
+    #myYields = getYield(path+'/'+files[i], "AnaAfterHlt/passedEvents","AnaAfterHlt/nEvents", 19.7, True)
     myYield_4l += myYields[0]
     myYield_4mu += myYields[1]
     myYield_4e += myYields[2]

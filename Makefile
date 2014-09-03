@@ -11,14 +11,15 @@ INSS=-I./include
 LD1=-L$(ROOFITSYS)/lib
 
 CFLAGS += `root-config --cflags` -g 
-LIBS += `root-config --glibs`
+LIBS += `root-config --libs`
+#LIBS += `root-config --glibs`
 
 LDa=-lRooFitCore
 LDb=-lRooFit
 
 .PHONY: clean all main test
 
-all: Hists_7TeV Hists_8TeV Hists_7p8TeV 
+all: Hists_7TeV Hists_8TeV Hists_7p8TeV Hists_7p8TeV_Zoom 
 
 HistMakerFromTree: HistMakerFromTree.o
 	$(CXX) -o makeHists.exe HistMakerFromTree.o $(LIBS)
@@ -37,6 +38,9 @@ Lists_7TeV: Lists_7TeV.o
 
 Hists_7p8TeV: Hists_7p8TeV.o
 	$(CXX) -o makeHists7p8TeV.exe Hists_7p8TeV.o $(LIBS)
+
+Hists_7p8TeV_Zoom: Hists_7p8TeV_Zoom.o
+	$(CXX) -o makeHists7p8TeVZoom.exe Hists_7p8TeV_Zoom.o $(LIBS)
 
 Hists_m4lerr_7p8TeV: Hists_m4lerr_7p8TeV.o
 	$(CXX) -o makeHistErrors_7p8TeV.exe Hists_m4lerr_7p8TeV.o $(LIBS)

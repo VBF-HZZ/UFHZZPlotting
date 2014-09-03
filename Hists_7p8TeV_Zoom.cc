@@ -13,6 +13,7 @@
 #include "TFile.h"
 #include "TString.h"
 #include "TH1.h"
+#include "TH1F.h"
 #include "TGraph.h"
 #include "TGraphErrors.h"
 #include "TF1.h"
@@ -50,8 +51,8 @@ int Run = 8;
 
 int main(int argc, char* argv[]){
 
-  if (argc != 9){
-    cout << "Usage: ./makeHists7p8TeV.exe <fileDir> <plotXlow> <plotXhigh> <binSize> <plotXlow_zoom> <plotXhigh_zoom> <binSize_zoom> <print data>" << endl;
+  if (argc < 6){
+    cout << "Usage: "<< argv[0] << " <fileDir> <plotXlow_zoom> <plotXhigh_zoom> <binSize_zoom> <Run>" << endl;
     return 1;
   }
 
@@ -82,35 +83,62 @@ int main(int argc, char* argv[]){
   double lumi_7 = 5.051;  
   double lumi_8 = 19.712;  
 
-  //whole range
-  Double_t binSize = atof(argv[4]);
-  Double_t xLow4l = (float)atof(argv[2]);//range of tree 
-  Double_t xHigh4l = (float)atof(argv[3]);//range of tree
-  Double_t plotXlow = (float)atof(argv[2]);//range of plot
-  Double_t plotXhigh = (float)atof(argv[3]);//range of plot
-  Int_t nBins4l = (plotXhigh-plotXlow)/binSize;
-  Double_t plotYmax = 36;
-  TString yAxisLabel = (TString)"Events / "+Form("%.0f",binSize)+" GeV";
+  // run: 7, 8 or 78
+  Run = atoi(argv[5]);
+  std::cout << "Processing Run " << Run << std::endl;
+
+  //low mass zoom
+  Double_t binSize_zoom = atof(argv[4]);
+  Double_t xLow4l_zoom = (float)atof(argv[2]);// 70 // range of tree
+  Double_t xHigh4l_zoom = (float)atof(argv[3]);// 190 //range of tree
+  Double_t plotXlow_zoom = atof(argv[2]);//range of plot 
+  Double_t plotXhigh_zoom = atof(argv[3]);//range of plot
+  Int_t nBins4l_zoom = (plotXhigh_zoom-plotXlow_zoom)/binSize_zoom;
+  Double_t plotYmax_zoom = 36;
+  TString yAxisLabel_zoom = (TString)"Events / "+Form("%.0f",binSize_zoom)+" GeV";
   TString xAxisLabel_m4l = "m_{4l} [GeV]";
   TString xAxisLabel_m4e = "m_{4e} [GeV]";
   TString xAxisLabel_m4mu = "m_{4#mu} [GeV]";
   TString xAxisLabel_m2e2mu = "m_{2e2#mu} [GeV]";
-  
-  //low mass zoom
-  Double_t binSize_zoom = atof(argv[7]);
-  Double_t xLow4l_zoom = (float)atof(argv[5]);// 70 // range of tree
-  Double_t xHigh4l_zoom = (float)atof(argv[6]);// 190 //range of tree
-  Double_t plotXlow_zoom = atof(argv[5]);//range of plot 
-  Double_t plotXhigh_zoom = atof(argv[6]);//range of plot
-  Int_t nBins4l_zoom = (plotXhigh_zoom-plotXlow_zoom)/binSize_zoom;
-  Double_t plotYmax_zoom = 36;
-  TString yAxisLabel_zoom = (TString)"Events / "+Form("%.0f",binSize_zoom)+" GeV";
-  double percentMaxBin = 1.5;
 
   //reducible background
-  Double_t  nBgEvents_4mu = 11.5;//11.54;//3.67;//0.58+3.09;
-  Double_t  nBgEvents_4e = 3.6;//3.67;//7.46;//1.37+6.09;
-  Double_t  nBgEvents_2e2mu = 7.4;//7.46;//11.54; //2.29+9.25;
+  Double_t  nBgEvents_4mu = 3.67; //11.5;//11.54;//3.67;//0.58+3.09;
+  Double_t  nBgEvents_4e = 7.46;//3.6;//3.67;//7.46;//1.37+6.09;
+  Double_t  nBgEvents_2e2mu = 11.54; //7.4;//7.46;//11.54; //2.29+9.25;
+
+  // reproducing wrong combination of the norms
+  bool doWrongCombine=false;
+  if (doWrongCombine)
+  {
+    nBgEvents_4mu = 11.54; // 2e2mu 
+    nBgEvents_4e = 3.67; // 4mu
+    nBgEvents_2e2mu = 7.46; // 4e
+  }
+  if (Run==7)
+  {
+    nBgEvents_4mu = 0.58;
+    nBgEvents_4e = 1.37;
+    nBgEvents_2e2mu = 2.29;
+    if (doWrongCombine)
+    {
+      nBgEvents_4mu = 2.29; // 2e2mu
+      nBgEvents_4e = 0.58; // 4mu
+      nBgEvents_2e2mu = 1.37; // 4e
+    }
+  }
+  else if (Run==8)
+  {
+    nBgEvents_4mu = 3.09;
+    nBgEvents_4e = 6.09;
+    nBgEvents_2e2mu = 9.25;
+    if (doWrongCombine)
+    {
+      nBgEvents_4mu = 9.25; // 2e2mu
+      nBgEvents_4e = 3.09; // 4mu
+      nBgEvents_2e2mu = 6.09; // 4e
+    }
+  }
+
   Double_t  nBgEvents = nBgEvents_4mu+nBgEvents_4e+nBgEvents_2e2mu;
   Double_t  l_4e_p0 = 1.0; //norm
   Double_t  l_4e_p1 = 0.117024;  // normalisation of landau1  (i.e. 2P2F)
@@ -155,11 +183,31 @@ int main(int argc, char* argv[]){
   gStyle->SetPadTopMargin(0.05);
   gStyle->SetPadBottomMargin(0.13);
 
-  double scale126_4e = 0.6+0.780174*lumi_8/5.261;
-  double scale126_4mu = 1.148+1.594*lumi_8/5.261;
-  double scale126_2e2mu = 1.53+2.22227*lumi_8/5.261;
-  double scale126_4l = scale126_4e+scale126_4mu+scale126_2e2mu;
 
+  double scale126_4e = 1;
+  double scale126_4mu = 1;
+  double scale126_2e2mu = 1.;
+  double scale126_4l = 1.;
+
+  //scale126_4e = 0.6+0.780174*lumi_8/5.261;
+  //scale126_4mu = 1.148+1.594*lumi_8/5.261;
+  //scale126_2e2mu = 1.53+2.22227*lumi_8/5.261;
+  //scale126_4l = scale126_4e+scale126_4mu+scale126_2e2mu;
+
+  //if (Run==7) 
+  //{
+  //  scale126_4e *= lumi_7/(lumi_8+lumi_7);
+  //  scale126_4mu *= lumi_7/(lumi_8+lumi_7);
+  //  scale126_2e2mu *= lumi_7/(lumi_8+lumi_7);
+  //  scale126_4l *= lumi_7/(lumi_8+lumi_7);
+  //}
+  //else if (Run==8)
+  //{
+  //  scale126_4e *= lumi_8/(lumi_8+lumi_7);
+  //  scale126_4mu *= lumi_8/(lumi_8+lumi_7);
+  //  scale126_2e2mu *= lumi_8/(lumi_8+lumi_7);
+  //  scale126_4l *= lumi_8/(lumi_8+lumi_7);
+  //}
 
 
   // 7 TeV
@@ -175,14 +223,15 @@ int main(int argc, char* argv[]){
   Collection *Czz2mu2tau_7 = new Collection("ZZ2mu2tau",fileDir_7+ "/ZZto2mu2tau.root" ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *Cggzz4l_7    = new Collection("ggZZ4l",fileDir_7+ "/ggZZ_4l.root"       ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *Cggzz2l2l_7  = new Collection("ggZZ2l2l",fileDir_7+ "/ggZZ_2e2mu.root"  ,treeName_7,lumi_7,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  //Collection *Cdata_7      = new Collection("Data",fileDir_7+ "/Data.root"            ,treeName_data,1,true,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  //Collection *Cdata_7      = new Collection("Data",fileDir_7+ "/Data_7TeV_MuEG_RMDUP.root"            ,treeName_data,1,true,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  //Collection *Cdata_7      = new Collection("Data",fileDir_7+ "/Data_7TeV_RMDUP.root"            ,treeName_data,1,true,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *Cdata_7      = new Collection("Data",fileDir_7+ "/Data_7TeV.root"            ,treeName_data_7,1,true,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
 
   // 8 TeV
+  Collection *CSMH126_8    = new Collection("mH126",fileDir_8+ "/mH_126_SMH.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *CggH126_8    = new Collection("mH126",fileDir_8+ "/mH_126_ggH_powheg15.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *CVBF126_8    = new Collection("mH126",fileDir_8+ "/mH_126_VBF.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *CTTH126_8    = new Collection("mH126",fileDir_8+ "/mH_126_TTH.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *CWH126_8    = new Collection("mH126",fileDir_8+ "/mH_126_WH.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *CZH126_8    = new Collection("mH126",fileDir_8+ "/mH_126_ZH.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *CggH350_8    = new Collection("mH350ggH",fileDir_8+ "/mH_350_ggH.root"  ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *CVBF350_8    = new Collection("mH350VBF",fileDir_8+ "/mH_350_VBF.root"  ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *Czz4mu_8     = new Collection("ZZ4mu",fileDir_8+ "/ZZ_4mu.root"         ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
@@ -191,14 +240,15 @@ int main(int argc, char* argv[]){
   Collection *Czz4tau_8    = new Collection("ZZ4tau",fileDir_8+ "/ZZto4tau.root"      ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *Czz2e2tau_8  = new Collection("ZZ2e2tau",fileDir_8+ "/ZZto2e2tau.root"  ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *Czz2mu2tau_8 = new Collection("ZZ2mu2tau",fileDir_8+ "/ZZto2mu2tau.root" ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-//  Collection *Cggzz4l_8    = new Collection("ggZZ4l",fileDir_7+ "/ggZZ_4l.root"       ,treeName_7,lumi_8*1.18,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-//  Collection *Cggzz2l2l_8  = new Collection("ggZZ2l2l",fileDir_7+ "/ggZZ_2e2mu.root"  ,treeName_7,lumi_8*1.18,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *Cggzz4l_8    = new Collection("ggZZ4l",fileDir_8+ "/ggZZ_4l.root"       ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  //Collection *Cggzz4l_8    = new Collection("ggZZ4l",fileDir_7+ "/ggZZ_4l.root"       ,treeName_7,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  //Collection *Cggzz2l2l_8  = new Collection("ggZZ2l2l",fileDir_7+ "/ggZZ_2e2mu.root"  ,treeName_7,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  //Collection *Cggzz4l_8    = new Collection("ggZZ4l",fileDir_7+ "/ggZZ_4l.root"       ,treeName_7,lumi_8*1.18,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  //Collection *Cggzz2l2l_8  = new Collection("ggZZ2l2l",fileDir_7+ "/ggZZ_2e2mu.root"  ,treeName_7,lumi_8*1.18,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Cggzz4l_8    = new Collection("ggZZ4l",fileDir_8+ "/ggZZ_4l.root"       ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut,0.1);
   Collection *Cggzz2l2l_8  = new Collection("ggZZ2l2l",fileDir_8+ "/ggZZ_2e2mu.root"  ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut,0.1);
 
-Collection *CZZJetsTo4L_8     = new Collection("ZZJetsTo4L",fileDir_8+ "/ZZJetsTo4L.root"         ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  //Collection *CZZJetsTo4L_8     = new Collection("ZZJetsTo4L",fileDir_8+ "/ZZJetsTo4L.root"         ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *Cdata_8      = new Collection("Data",fileDir_8+ "/Data_8TeV.root"            ,treeName_data,1,true,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-
 
 
   std::vector<Collection*> cvZZ, cvH350,cvggzz,cvH126,cvData;
@@ -230,8 +280,12 @@ Collection *CZZJetsTo4L_8     = new Collection("ZZJetsTo4L",fileDir_8+ "/ZZJetsT
   if (Run==7||Run==78) cvH350.push_back(CVBF350_7);
   if (Run==8||Run==78) cvH350.push_back(CggH350_8);
   if (Run==8||Run==78) cvH350.push_back(CVBF350_8);
-  if (Run==8||Run==78) cvH126.push_back(CggH126_8);
+  //if (Run==8||Run==78) cvH126.push_back(CggH126_8);
+  if (Run==8||Run==78) cvH126.push_back(CSMH126_8);
   if (Run==8||Run==78) cvH126.push_back(CVBF126_8);
+  if (Run==8||Run==78) cvH126.push_back(CTTH126_8);
+  if (Run==8||Run==78) cvH126.push_back(CWH126_8);
+  if (Run==8||Run==78) cvH126.push_back(CZH126_8);
 
   if (Run==8||Run==78) cvData.push_back(Cdata_8);
   if (Run==7||Run==78) cvData.push_back(Cdata_7);
@@ -331,24 +385,32 @@ Collection *CZZJetsTo4L_8     = new Collection("ZZJetsTo4L",fileDir_8+ "/ZZJetsT
   TH1F* histm4l_h126_zoom = new TH1F("m4l_h126_zoom","Mass of 4 leptons; m_{4l} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
   TH1F* histm4l_h350_zoom = new TH1F("m4l_h350_zoom","Mass of 4 leptons; m_{4l} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
   TH1F* histm4l_ZZ_zoom = new TH1F("m4l_ZZ_zoom","Mass of 4 leptons; m_{4l} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
-
-  
   TH1F* histm4l_ZX_zoom = new TH1F("m4l_ZX_zoom","Mass of 4 leptons; m_{4l} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom); 
-  helper->getHistFromTF1(redBgFunc_4l,histm4l_ZX_zoom,-1);
-
   TH1F* histm4l_data_zoom = new TH1F("m4l_data_zoom","Mass of 4 leptons; m_{4l} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
-  helper->fillHistFromVariable(MCData,histm4l_data_zoom,"mass4l");
+
+  double histm4l_data_zoom_integral, histm4l_data_zoom_integralerr, histm4l_data_zoom_entries;
+  double histm4l_ZZ_zoom_integral, histm4l_ZZ_zoom_integralerr, histm4l_ZZ_zoom_entries;
+  double histm4l_ZX_zoom_integral, histm4l_ZX_zoom_integralerr;
+  double histm4l_h126_zoom_integral, histm4l_h126_zoom_integralerr, histm4l_h126_zoom_entries;
+
+  helper->getHistFromTF1(redBgFunc_4l,histm4l_ZX_zoom,-1);
+  histm4l_data_zoom_entries = helper->fillHistFromVariable(MCData,histm4l_data_zoom,"mass4l");
   TGraphAsymmErrors* histm4l_dataE_zoom;
   helper->getAsymErr(histm4l_data_zoom,histm4l_dataE_zoom);
     
-  helper->fillHistFromVariable(MCZZ,histm4l_ZZ_zoom,"mass4l");
-  std::cout<<"histm4l_ZZ_zoom: "<<histm4l_ZZ_zoom->Integral()<<std::endl;
+  histm4l_ZZ_zoom_entries = helper->fillHistFromVariable(MCZZ,histm4l_ZZ_zoom,"mass4l");
   helper->fillHistFromVariable(MCH350,histm4l_h350_zoom,"mass4l");
-  std::cout<<"histm4l_h350_zoom: "<<histm4l_h350_zoom->Integral()<<std::endl;
-  helper->fillHistFromVariable(MCH126,histm4l_h126_zoom,"mass4l");
-  std::cout<<"histm4l_h126_zoom: "<<histm4l_h126_zoom->Integral()<<std::endl;
-  histm4l_h126_zoom->Scale(scale126_4l/histm4l_h126_zoom->Integral());
-  std::cout<<"histm4l_h126scaled_zoom: "<<histm4l_h126_zoom->Integral()<<std::endl;
+  histm4l_h126_zoom_entries = helper->fillHistFromVariable(MCH126,histm4l_h126_zoom,"mass4l");
+  //histm4l_h126_zoom->Scale(scale126_4l/histm4l_h126_zoom->Integral());
+
+  histm4l_data_zoom_integral = histm4l_data_zoom->IntegralAndError(1, histm4l_data_zoom->GetNbinsX(), histm4l_data_zoom_integralerr);
+  histm4l_ZZ_zoom_integral = histm4l_ZZ_zoom->IntegralAndError(1, histm4l_ZZ_zoom->GetNbinsX(), histm4l_ZZ_zoom_integralerr);
+  histm4l_ZX_zoom_integral = histm4l_ZX_zoom->IntegralAndError(1, histm4l_ZX_zoom->GetNbinsX(), histm4l_ZX_zoom_integralerr);
+  histm4l_h126_zoom_integral = histm4l_h126_zoom->IntegralAndError(1, histm4l_h126_zoom->GetNbinsX(), histm4l_h126_zoom_integralerr);
+
+  //histm4l_data_zoom_entries = histm4l_data_zoom->GetEffectiveEntries();
+  //histm4l_ZZ_zoom_entries = histm4l_ZZ_zoom->GetEffectiveEntries();
+  //histm4l_h126_zoom_entries = histm4l_h126_zoom->GetEffectiveEntries();
 
   // test give 2 events for ZZ background and 1 event more to Signal:
   //histm4l_ZZ_zoom->Scale((7.5+histm4l_ZZ_zoom->Integral())/histm4l_ZZ_zoom->Integral());
@@ -396,19 +458,33 @@ Collection *CZZJetsTo4L_8     = new Collection("ZZJetsTo4L",fileDir_8+ "/ZZJetsT
   TH1F* histm4e_h126_zoom = new TH1F("m4e_h126_zoom","Mass of 4 leptons; m_{4e} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
   TH1F* histm4e_h350_zoom = new TH1F("m4e_h350_zoom","Mass of 4 leptons; m_{4e} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
   TH1F* histm4e_ZZ_zoom = new TH1F("m4e_ZZ_zoom","Mass of 4 leptons; m_{4e} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
-  
   TH1F* histm4e_ZX_zoom = new TH1F("m4e_ZX_zoom","Mass of 4 leptons; m_{4e} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom); 
-  helper->getHistFromTF1(redBgFunc_4e,histm4e_ZX_zoom, nBgEvents_4e);
-
   TH1F* histm4e_data_zoom = new TH1F("m4e_data_zoom","Mass of 4 leptons; m_{4e} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
-  helper->fillHistFromVariable(MCData,histm4e_data_zoom,"mass4e");
+
+  double histm4e_data_zoom_integral, histm4e_data_zoom_integralerr, histm4e_data_zoom_entries;
+  double histm4e_ZZ_zoom_integral, histm4e_ZZ_zoom_integralerr, histm4e_ZZ_zoom_entries;
+  double histm4e_ZX_zoom_integral, histm4e_ZX_zoom_integralerr;
+  double histm4e_h126_zoom_integral, histm4e_h126_zoom_integralerr, histm4e_h126_zoom_entries;
+
+  //helper->getHistFromTF1(redBgFunc_4e,histm4e_ZX_zoom, nBgEvents_4e);
+  helper->getHistFromTF1(redBgFunc_4e,histm4e_ZX_zoom, -1);
+  histm4e_data_zoom_entries = helper->fillHistFromVariable(MCData,histm4e_data_zoom,"mass4e");
   TGraphAsymmErrors* histm4e_dataE_zoom;
   helper->getAsymErr(histm4e_data_zoom,histm4e_dataE_zoom);
     
-  helper->fillHistFromVariable(MCZZ,histm4e_ZZ_zoom,"mass4e");
+  histm4e_ZZ_zoom_entries = helper->fillHistFromVariable(MCZZ,histm4e_ZZ_zoom,"mass4e");
   helper->fillHistFromVariable(MCH350,histm4e_h350_zoom,"mass4e");
-  helper->fillHistFromVariable(MCH126,histm4e_h126_zoom,"mass4e");
-  histm4l_h126_zoom->Scale(scale126_4e/histm4e_h126_zoom->Integral());
+  histm4e_h126_zoom_entries = helper->fillHistFromVariable(MCH126,histm4e_h126_zoom,"mass4e");
+  //histm4e_h126_zoom->Scale(scale126_4e/histm4e_h126_zoom->Integral());
+
+  histm4e_data_zoom_integral = histm4e_data_zoom->IntegralAndError(1, histm4e_data_zoom->GetNbinsX(), histm4e_data_zoom_integralerr);
+  histm4e_ZZ_zoom_integral = histm4e_ZZ_zoom->IntegralAndError(1, histm4e_ZZ_zoom->GetNbinsX(), histm4e_ZZ_zoom_integralerr);
+  histm4e_ZX_zoom_integral = histm4e_ZX_zoom->IntegralAndError(1, histm4e_ZX_zoom->GetNbinsX(), histm4e_ZX_zoom_integralerr);
+  histm4e_h126_zoom_integral = histm4e_h126_zoom->IntegralAndError(1, histm4e_h126_zoom->GetNbinsX(), histm4e_h126_zoom_integralerr);
+
+  //histm4e_data_zoom_entries = histm4e_data_zoom->GetEffectiveEntries();
+  //histm4e_ZZ_zoom_entries = histm4e_ZZ_zoom->GetEffectiveEntries();
+  //histm4e_h126_zoom_entries = histm4e_h126_zoom->GetEffectiveEntries();
 
   helper->setHistProperties(histm4e_ZZ_zoom,ZZBgColor,1001,helper->filled);
   helper->setHistProperties(histm4e_ZX_zoom,redBgColor,1001,helper->filled);
@@ -441,19 +517,34 @@ Collection *CZZJetsTo4L_8     = new Collection("ZZJetsTo4L",fileDir_8+ "/ZZJetsT
   TH1F* histm4mu_h126_zoom = new TH1F("m4mu_h126_zoom","Mass of 4 leptons; m_{4#mu} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
   TH1F* histm4mu_h350_zoom = new TH1F("m4mu_h350_zoom","Mass of 4 leptons; m_{4#mu} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
   TH1F* histm4mu_ZZ_zoom = new TH1F("m4mu_ZZ_zoom","Mass of 4 leptons; m_{4#mu} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
-  
   TH1F* histm4mu_ZX_zoom = new TH1F("m4mu_ZX_zoom","Mass of 4 leptons; m_{4#mu} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom); 
-  helper->getHistFromTF1(redBgFunc_4mu,histm4mu_ZX_zoom,nBgEvents_4mu);
-
   TH1F* histm4mu_data_zoom = new TH1F("m4mu_data_zoom","Mass of 4 leptons; m_{4#mu} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
-  helper->fillHistFromVariable(MCData,histm4mu_data_zoom,"mass4mu");
+
+  double histm4mu_data_zoom_integral, histm4mu_data_zoom_integralerr, histm4mu_data_zoom_entries;
+  double histm4mu_ZZ_zoom_integral, histm4mu_ZZ_zoom_integralerr, histm4mu_ZZ_zoom_entries;
+  double histm4mu_ZX_zoom_integral, histm4mu_ZX_zoom_integralerr;
+  double histm4mu_h126_zoom_integral, histm4mu_h126_zoom_integralerr, histm4mu_h126_zoom_entries;
+
+  //helper->getHistFromTF1(redBgFunc_4mu,histm4mu_ZX_zoom,nBgEvents_4mu);
+  helper->getHistFromTF1(redBgFunc_4mu,histm4mu_ZX_zoom,-1);
+  histm4mu_data_zoom_entries = helper->fillHistFromVariable(MCData,histm4mu_data_zoom,"mass4mu");
   TGraphAsymmErrors* histm4mu_dataE_zoom;
   helper->getAsymErr(histm4mu_data_zoom,histm4mu_dataE_zoom);
     
-  helper->fillHistFromVariable(MCZZ,histm4mu_ZZ_zoom,"mass4mu");
+  histm4mu_ZZ_zoom_entries = helper->fillHistFromVariable(MCZZ,histm4mu_ZZ_zoom,"mass4mu");
   helper->fillHistFromVariable(MCH350,histm4mu_h350_zoom,"mass4mu");
-  helper->fillHistFromVariable(MCH126,histm4mu_h126_zoom,"mass4mu");
-  histm4mu_h126_zoom->Scale(scale126_4mu/histm4mu_h126_zoom->Integral());
+  histm4mu_h126_zoom_entries = helper->fillHistFromVariable(MCH126,histm4mu_h126_zoom,"mass4mu");
+  //histm4mu_h126_zoom->Scale(scale126_4mu/histm4mu_h126_zoom->Integral());
+
+
+  histm4mu_data_zoom_integral = histm4mu_data_zoom->IntegralAndError(1, histm4mu_data_zoom->GetNbinsX(), histm4mu_data_zoom_integralerr);
+  histm4mu_ZZ_zoom_integral = histm4mu_ZZ_zoom->IntegralAndError(1, histm4mu_ZZ_zoom->GetNbinsX(), histm4mu_ZZ_zoom_integralerr);
+  histm4mu_ZX_zoom_integral = histm4mu_ZX_zoom->IntegralAndError(1, histm4mu_ZX_zoom->GetNbinsX(), histm4mu_ZX_zoom_integralerr);
+  histm4mu_h126_zoom_integral = histm4mu_h126_zoom->IntegralAndError(1, histm4mu_h126_zoom->GetNbinsX(), histm4mu_h126_zoom_integralerr);
+
+  //histm4mu_data_zoom_entries = histm4mu_data_zoom->GetEffectiveEntries();
+  //histm4mu_ZZ_zoom_entries = histm4mu_ZZ_zoom->GetEffectiveEntries();
+  //histm4mu_h126_zoom_entries = histm4mu_h126_zoom->GetEffectiveEntries();
 
   helper->setHistProperties(histm4mu_ZZ_zoom,ZZBgColor,1001,helper->filled);
   helper->setHistProperties(histm4mu_ZX_zoom,redBgColor,1001,helper->filled);
@@ -487,19 +578,34 @@ Collection *CZZJetsTo4L_8     = new Collection("ZZJetsTo4L",fileDir_8+ "/ZZJetsT
   TH1F* histm2e2mu_h126_zoom = new TH1F("m2e2mu_h126_zoom","Mass of 4 leptons; m_{2e2#mu} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
   TH1F* histm2e2mu_h350_zoom = new TH1F("m2e2mu_h350_zoom","Mass of 4 leptons; m_{2e2#mu} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
   TH1F* histm2e2mu_ZZ_zoom = new TH1F("m2e2mu_ZZ_zoom","Mass of 4 leptons; m_{2e2#mu} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
-  
   TH1F* histm2e2mu_ZX_zoom = new TH1F("m2e2mu_ZX_zoom","Mass of 4 leptons; m_{2e2#mu} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom); 
-  helper->getHistFromTF1(redBgFunc_2e2mu,histm2e2mu_ZX_zoom,nBgEvents_2e2mu);
-
   TH1F* histm2e2mu_data_zoom = new TH1F("m2e2mu_data_zoom","Mass of 4 leptons; m_{2e2#mu} [GeV]; Events / 3 GeV",nBins4l_zoom,xLow4l_zoom,xHigh4l_zoom);
-  helper->fillHistFromVariable(MCData,histm2e2mu_data_zoom,"mass2e2mu");
+
+  double histm2e2mu_data_zoom_integral, histm2e2mu_data_zoom_integralerr, histm2e2mu_data_zoom_entries;
+  double histm2e2mu_ZZ_zoom_integral, histm2e2mu_ZZ_zoom_integralerr, histm2e2mu_ZZ_zoom_entries;
+  double histm2e2mu_ZX_zoom_integral, histm2e2mu_ZX_zoom_integralerr;
+  double histm2e2mu_h126_zoom_integral, histm2e2mu_h126_zoom_integralerr, histm2e2mu_h126_zoom_entries;
+
+  //helper->getHistFromTF1(redBgFunc_2e2mu,histm2e2mu_ZX_zoom,nBgEvents_2e2mu);
+  helper->getHistFromTF1(redBgFunc_2e2mu,histm2e2mu_ZX_zoom,-1);
+  histm2e2mu_data_zoom_entries = helper->fillHistFromVariable(MCData,histm2e2mu_data_zoom,"mass2e2mu");
   TGraphAsymmErrors* histm2e2mu_dataE_zoom;
   helper->getAsymErr(histm2e2mu_data_zoom,histm2e2mu_dataE_zoom);
     
-  helper->fillHistFromVariable(MCZZ,histm2e2mu_ZZ_zoom,"mass2e2mu");
+  histm2e2mu_ZZ_zoom_entries = helper->fillHistFromVariable(MCZZ,histm2e2mu_ZZ_zoom,"mass2e2mu");
   helper->fillHistFromVariable(MCH350,histm2e2mu_h350_zoom,"mass2e2mu");
-  helper->fillHistFromVariable(MCH126,histm2e2mu_h126_zoom,"mass2e2mu");
-  histm4l_h126_zoom->Scale(scale126_2e2mu/histm2e2mu_h126_zoom->Integral());
+  histm2e2mu_h126_zoom_entries = helper->fillHistFromVariable(MCH126,histm2e2mu_h126_zoom,"mass2e2mu");
+  //histm2e2mu_h126_zoom->Scale(scale126_2e2mu/histm2e2mu_h126_zoom->Integral());
+
+
+  histm2e2mu_data_zoom_integral = histm2e2mu_data_zoom->IntegralAndError(1, histm2e2mu_data_zoom->GetNbinsX(), histm2e2mu_data_zoom_integralerr);
+  histm2e2mu_ZZ_zoom_integral = histm2e2mu_ZZ_zoom->IntegralAndError(1, histm2e2mu_ZZ_zoom->GetNbinsX(), histm2e2mu_ZZ_zoom_integralerr);
+  histm2e2mu_ZX_zoom_integral = histm2e2mu_ZX_zoom->IntegralAndError(1, histm2e2mu_ZX_zoom->GetNbinsX(), histm2e2mu_ZX_zoom_integralerr);
+  histm2e2mu_h126_zoom_integral = histm2e2mu_h126_zoom->IntegralAndError(1, histm2e2mu_h126_zoom->GetNbinsX(), histm2e2mu_h126_zoom_integralerr);
+
+  //histm2e2mu_data_zoom_entries = histm2e2mu_data_zoom->GetEffectiveEntries();
+  //histm2e2mu_ZZ_zoom_entries = histm2e2mu_ZZ_zoom->GetEffectiveEntries();
+  //histm2e2mu_h126_zoom_entries = histm2e2mu_h126_zoom->GetEffectiveEntries();
 
   helper->setHistProperties(histm2e2mu_ZZ_zoom,ZZBgColor,1001,helper->filled);
   helper->setHistProperties(histm2e2mu_ZX_zoom,redBgColor,1001,helper->filled);
@@ -529,222 +635,40 @@ Collection *CZZJetsTo4L_8     = new Collection("ZZJetsTo4L",fileDir_8+ "/ZZJetsT
 
   // ================================================================================================= //
 
+  // print yields
+  std::cout << " ======================================== " << std::endl;
+  std::cout << "   Run " << Run << " " << plotXlow_zoom << " < m4l < " << plotXhigh_zoom << std::endl;
+  std::cout << " ======================================== " << std::endl;
+  std::cout << "4l :" << std::endl;
+  std::cout << " Data:  " << histm4l_data_zoom_integral << " +/- " << histm4l_data_zoom_integralerr << "; Entries: " << histm4l_data_zoom_entries << std::endl;
+  std::cout << " ZZ:    " << histm4l_ZZ_zoom_integral << " +/- " << histm4l_ZZ_zoom_integralerr << "; Entries: " << histm4l_ZZ_zoom_entries << std::endl;
+  std::cout << " ZX:    " << histm4l_ZX_zoom_integral << " +/- " << histm4l_ZX_zoom_integralerr << std::endl;
+  std::cout << " mH126: " << histm4l_h126_zoom_integral << " +/- " << histm4l_h126_zoom_integralerr << "; Entries: " << histm4l_h126_zoom_entries << std::endl;
+  std::cout << " ======================================== " << std::endl;
 
-  // --------------- m4l ---------------- //
-  TH1F* histm4l_h126 = new TH1F("m4l_h126","Mass of 4 leptons; m_{4l} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
-  TH1F* histm4l_h350 = new TH1F("m4l_h350","Mass of 4 leptons; m_{4l} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
-  TH1F* histm4l_ZZ = new TH1F("m4l_ZZ","Mass of 4 leptons; m_{4l} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
-  
-  TH1F* histm4l_ZX = new TH1F("m4l_ZX","Mass of 4 leptons; m_{4l} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l); 
-  helper->getHistFromTF1(redBgFunc_4l,histm4l_ZX,nBgEvents);
+  std::cout << " ======================================== " << std::endl;
+  std::cout << "4e :" << std::endl;
+  std::cout << " Data:  " << histm4e_data_zoom_integral << " +/- " << histm4e_data_zoom_integralerr << "; Entries: " << histm4e_data_zoom_entries << std::endl;
+  std::cout << " ZZ:    " << histm4e_ZZ_zoom_integral << " +/- " << histm4e_ZZ_zoom_integralerr << "; Entries: " << histm4e_ZZ_zoom_entries << std::endl;
+  std::cout << " ZX:    " << histm4e_ZX_zoom_integral << " +/- " << histm4e_ZX_zoom_integralerr << std::endl;
+  std::cout << " mH126: " << histm4e_h126_zoom_integral << " +/- " << histm4e_h126_zoom_integralerr << "; Entries: " << histm4e_h126_zoom_entries << std::endl;
+  std::cout << " ======================================== " << std::endl;
 
-  TH1F* histm4l_data = new TH1F("m4l_data","Mass of 4 leptons; m_{4l} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
-  helper->fillHistFromVariable(MCData,histm4l_data,"mass4l");
-  TGraphAsymmErrors* histm4l_dataE;
-  helper->getAsymErr(histm4l_data,histm4l_dataE);
-    
-  helper->fillHistFromVariable(MCZZ,histm4l_ZZ,"mass4l");
-  std::cout<<"histm4l_ZZ: "<<histm4l_ZZ->Integral()<<std::endl;
-  helper->fillHistFromVariable(MCH350,histm4l_h350,"mass4l");
-  std::cout<<"histm4l_h350: "<<histm4l_h350->Integral()<<std::endl;
-  helper->fillHistFromVariable(MCH126,histm4l_h126,"mass4l");
-  std::cout<<"histm4l_h126: "<<histm4l_h126->Integral()<<std::endl;
-  histm4l_h126->Scale(scale126_4l/histm4l_h126->Integral());
-  std::cout<<"histm4l_h126scaled: "<<histm4l_h126->Integral()<<std::endl;
+  std::cout << " ======================================== " << std::endl;
+  std::cout << "4mu :" << std::endl;
+  std::cout << " Data:  " << histm4mu_data_zoom_integral << " +/- " << histm4mu_data_zoom_integralerr << "; Entries: " << histm4mu_data_zoom_entries << std::endl;
+  std::cout << " ZZ:    " << histm4mu_ZZ_zoom_integral << " +/- " << histm4mu_ZZ_zoom_integralerr << "; Entries: " << histm4mu_ZZ_zoom_entries << std::endl;
+  std::cout << " ZX:    " << histm4mu_ZX_zoom_integral << " +/- " << histm4mu_ZX_zoom_integralerr << std::endl;
+  std::cout << " mH126: " << histm4mu_h126_zoom_integral << " +/- " << histm4mu_h126_zoom_integralerr << "; Entries: " << histm4mu_h126_zoom_entries << std::endl;
+  std::cout << " ======================================== " << std::endl;
 
-  helper->setHistProperties(histm4l_ZZ,ZZBgColor,1001,helper->filled);
-  helper->setHistProperties(histm4l_ZX,redBgColor,1001,helper->filled);
-  helper->setHistProperties(histm4l_h126,h126Color,1001,helper->line);
-  helper->setHistProperties(histm4l_h350,h350Color,1001,helper->line);
-  helper->setHistProperties(histm4l_data,kBlack,1001,helper->markers,20);
-
-  //helper->addLegendEntry(leg,histm4l_h350,"m_{H}=350","F");
-
-
-  dv highestBin_m4l;
-  highestBin_m4l.push_back(helper->findHighestBin(histm4l_ZX));
-  highestBin_m4l.push_back(helper->findHighestBin(histm4l_ZZ));
-  highestBin_m4l.push_back(helper->findHighestBin(histm4l_h126));
-  highestBin_m4l.push_back(helper->findHighestBin(histm4l_h350));
-  highestBin_m4l.push_back(helper->findHighestBin(histm4l_data));
-
-//  for(unsigned int k = 0; k < highestBin_m4l.size(); k++)
-//    {
-//      if(percentMaxBin*highestBin_m4l[k] > plotYmax) plotYmax = percentMaxBin*highestBin_m4l[k];
-//    }
-
-
-  THStack *stackM4l = new THStack();
-  stackM4l->Add(histm4l_ZX);
-  stackM4l->Add(histm4l_ZZ);
-  stackM4l->Add(histm4l_h126);
-  //stackM4l->Add(histm4l_h350);
-
-
-  helper->draw7p8Plot(stackM4l,histm4l_dataE,leg,CP,pngPlotDir+"/m4l_"+Form("%.0f",plotXlow)+"_"+Form("%.0f",plotXhigh)+".png",
-		      xAxisLabel_m4l,yAxisLabel,lumi_7,lumi_8,plotXlow,plotXhigh,plotYmax);
-  helper->draw7p8Plot(stackM4l,histm4l_dataE,leg,CP,epsPlotDir+"/m4l_"+Form("%.0f",plotXlow)+"_"+Form("%.0f",plotXhigh)+".eps",
-		      xAxisLabel_m4l,yAxisLabel,lumi_7,lumi_8,plotXlow,plotXhigh,plotYmax);
-  
-//  plotYmax = 0;
-
-  // ------------- m4e ------------ //
-  TH1F* histm4e_h126 = new TH1F("m4e_h126","Mass of 4 leptons; m_{4e} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
-  TH1F* histm4e_h350 = new TH1F("m4e_h350","Mass of 4 leptons; m_{4e} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
-  TH1F* histm4e_ZZ = new TH1F("m4e_ZZ","Mass of 4 leptons; m_{4e} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
-  
-  TH1F* histm4e_ZX = new TH1F("m4e_ZX","Mass of 4 leptons; m_{4e} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l); 
-  helper->getHistFromTF1(redBgFunc_4e,histm4e_ZX,nBgEvents_4e);
-
-  TH1F* histm4e_data = new TH1F("m4e_data","Mass of 4 leptons; m_{4e} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
-  helper->fillHistFromVariable(MCData,histm4e_data,"mass4e");
-  TGraphAsymmErrors* histm4e_dataE;
-  helper->getAsymErr(histm4e_data,histm4e_dataE);
-    
-  helper->fillHistFromVariable(MCZZ,histm4e_ZZ,"mass4e");
-  helper->fillHistFromVariable(MCH350,histm4e_h350,"mass4e");
-  helper->fillHistFromVariable(MCH126,histm4e_h126,"mass4e");
-  histm4e_h126->Scale(scale126_4e/histm4e_h126->Integral());
-
-  helper->setHistProperties(histm4e_ZZ,ZZBgColor,1001,helper->filled);
-  helper->setHistProperties(histm4e_ZX,redBgColor,1001,helper->filled);
-  helper->setHistProperties(histm4e_h126,h126Color,1001,helper->line);
-  helper->setHistProperties(histm4e_h350,h350Color,1001,helper->line);
-  helper->setHistProperties(histm4e_data,kBlack,1001,helper->markers,20);
-
-  dv highestBin_m4e;
-  highestBin_m4e.push_back(helper->findHighestBin(histm4e_ZX));
-  highestBin_m4e.push_back(helper->findHighestBin(histm4e_ZZ));
-  highestBin_m4e.push_back(helper->findHighestBin(histm4e_h126));
-  highestBin_m4e.push_back(helper->findHighestBin(histm4e_h350));
-  highestBin_m4e.push_back(helper->findHighestBin(histm4e_data));
-
-//  for(unsigned int k = 0; k < highestBin_m4e.size(); k++)
-//    {
-//      if(percentMaxBin*highestBin_m4e[k] > plotYmax) plotYmax = percentMaxBin*highestBin_m4e[k];
-//    }
-
-  THStack *stackM4e = new THStack();
-  stackM4e->Add(histm4e_ZX);
-  stackM4e->Add(histm4e_ZZ);
-  stackM4e->Add(histm4e_h126);
-  //stackM4e->Add(histm4e_h350);
-
- // plotYmax = 50;
-
-  helper->draw7p8Plot(stackM4e,histm4e_dataE,leg,CP,pngPlotDir+"/m4e_"+Form("%.0f",plotXlow)+"_"+Form("%.0f",plotXhigh)+".png",
-		      xAxisLabel_m4e,yAxisLabel,lumi_7,lumi_8,plotXlow,plotXhigh,plotYmax);
-  helper->draw7p8Plot(stackM4e,histm4e_dataE,leg,CP,epsPlotDir+"/m4e_"+Form("%.0f",plotXlow)+"_"+Form("%.0f",plotXhigh)+".eps",
-		      xAxisLabel_m4e,yAxisLabel,lumi_7,lumi_8,plotXlow,plotXhigh,plotYmax);
-  
-//  plotYmax = 0;
-
-  // ------------ m4mu ------------- //
-  TH1F* histm4mu_h126 = new TH1F("m4mu_h126","Mass of 4 leptons; m_{4#mu} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
-  TH1F* histm4mu_h350 = new TH1F("m4mu_h350","Mass of 4 leptons; m_{4#mu} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
-  TH1F* histm4mu_ZZ = new TH1F("m4mu_ZZ","Mass of 4 leptons; m_{4#mu} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
-  
-  TH1F* histm4mu_ZX = new TH1F("m4mu_ZX","Mass of 4 leptons; m_{4#mu} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l); 
-  helper->getHistFromTF1(redBgFunc_4mu,histm4mu_ZX,nBgEvents_4mu);
-
-  TH1F* histm4mu_data = new TH1F("m4mu_data","Mass of 4 leptons; m_{4#mu} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
-  helper->fillHistFromVariable(MCData,histm4mu_data,"mass4mu");
-  TGraphAsymmErrors* histm4mu_dataE;
-  helper->getAsymErr(histm4mu_data,histm4mu_dataE);
-    
-  helper->fillHistFromVariable(MCZZ,histm4mu_ZZ,"mass4mu");
-  helper->fillHistFromVariable(MCH350,histm4mu_h350,"mass4mu");
-  helper->fillHistFromVariable(MCH126,histm4mu_h126,"mass4mu");
-  histm4mu_h126->Scale(scale126_4mu/histm4mu_h126->Integral());
-
-  helper->setHistProperties(histm4mu_ZZ,ZZBgColor,1001,helper->filled);
-  helper->setHistProperties(histm4mu_ZX,redBgColor,1001,helper->filled);
-  helper->setHistProperties(histm4mu_h126,h126Color,1001,helper->line);
-  helper->setHistProperties(histm4mu_h350,h350Color,1001,helper->line);
-  helper->setHistProperties(histm4mu_data,kBlack,1001,helper->markers,20);
-
-
-  dv highestBin_m4mu;
-  highestBin_m4mu.push_back(helper->findHighestBin(histm4mu_ZX));
-  highestBin_m4mu.push_back(helper->findHighestBin(histm4mu_ZZ));
-  highestBin_m4mu.push_back(helper->findHighestBin(histm4mu_h126));
-  highestBin_m4mu.push_back(helper->findHighestBin(histm4mu_h350));
-  highestBin_m4mu.push_back(helper->findHighestBin(histm4mu_data));
-
-//  for(unsigned int k = 0; k < highestBin_m4mu.size(); k++)
-//    {
-//      if(percentMaxBin*highestBin_m4mu[k] > plotYmax) plotYmax = percentMaxBin*highestBin_m4mu[k];
-//    }
-
-
-
-  THStack *stackM4mu = new THStack();
-  stackM4mu->Add(histm4mu_ZX);
-  stackM4mu->Add(histm4mu_ZZ);
-  stackM4mu->Add(histm4mu_h126);
-  //stackM4mu->Add(histm4mu_h350);
-
-//  plotYmax = 50;
-
-
-  helper->draw7p8Plot(stackM4mu,histm4mu_dataE,leg,CP,pngPlotDir+"/m4mu_"+Form("%.0f",plotXlow)+"_"+Form("%.0f",plotXhigh)+".png",
-		      xAxisLabel_m4mu,yAxisLabel,lumi_7,lumi_8,plotXlow,plotXhigh,plotYmax);
-  helper->draw7p8Plot(stackM4mu,histm4mu_dataE,leg,CP,epsPlotDir+"/m4mu_"+Form("%.0f",plotXlow)+"_"+Form("%.0f",plotXhigh)+".eps",
-		      xAxisLabel_m4mu,yAxisLabel,lumi_7,lumi_8,plotXlow,plotXhigh,plotYmax);
-
-//  plotYmax = 0;
-
-  // ------------ m2e2mu ------------- //
-  TH1F* histm2e2mu_h126 = new TH1F("m2e2mu_h126","Mass of 4 leptons; m_{2e2#mu} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
-  TH1F* histm2e2mu_h350 = new TH1F("m2e2mu_h350","Mass of 4 leptons; m_{2e2#mu} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
-  TH1F* histm2e2mu_ZZ = new TH1F("m2e2mu_ZZ","Mass of 4 leptons; m_{2e2#mu} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
-  
-  TH1F* histm2e2mu_ZX = new TH1F("m2e2mu_ZX","Mass of 4 leptons; m_{2e2#mu} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l); 
-  helper->getHistFromTF1(redBgFunc_2e2mu,histm2e2mu_ZX,nBgEvents_2e2mu);
-
-  TH1F* histm2e2mu_data = new TH1F("m2e2mu_data","Mass of 4 leptons; m_{2e2#mu} [GeV]; Events / 10 GeV",nBins4l,xLow4l,xHigh4l);
-  helper->fillHistFromVariable(MCData,histm2e2mu_data,"mass2e2mu");
-  TGraphAsymmErrors* histm2e2mu_dataE;
-  helper->getAsymErr(histm2e2mu_data,histm2e2mu_dataE);
-    
-  helper->fillHistFromVariable(MCZZ,histm2e2mu_ZZ,"mass2e2mu");
-  helper->fillHistFromVariable(MCH350,histm2e2mu_h350,"mass2e2mu");
-  helper->fillHistFromVariable(MCH126,histm2e2mu_h126,"mass2e2mu");
-  histm2e2mu_h126->Scale(scale126_2e2mu/histm2e2mu_h126->Integral());
-
-  helper->setHistProperties(histm2e2mu_ZZ,ZZBgColor,1001,helper->filled);
-  helper->setHistProperties(histm2e2mu_ZX,redBgColor,1001,helper->filled);
-  helper->setHistProperties(histm2e2mu_h126,h126Color,1001,helper->line);
-  helper->setHistProperties(histm2e2mu_h350,h350Color,1001,helper->line);
-  helper->setHistProperties(histm2e2mu_data,kBlack,1001,helper->markers,20);
-
-  dv highestBin_m2e2mu;
-  highestBin_m2e2mu.push_back(helper->findHighestBin(histm2e2mu_ZX));
-  highestBin_m2e2mu.push_back(helper->findHighestBin(histm2e2mu_ZZ));
-  highestBin_m2e2mu.push_back(helper->findHighestBin(histm2e2mu_h126));
-  highestBin_m2e2mu.push_back(helper->findHighestBin(histm2e2mu_h350));
-  highestBin_m2e2mu.push_back(helper->findHighestBin(histm2e2mu_data));
-
-//  for(unsigned int k = 0; k < highestBin_m2e2mu.size(); k++)
-//    {
-//      if(percentMaxBin*highestBin_m2e2mu[k] > plotYmax) plotYmax = percentMaxBin*highestBin_m2e2mu[k];
-//    }
-
-
-  THStack *stackM2e2mu = new THStack();
-  stackM2e2mu->Add(histm2e2mu_ZX);
-  stackM2e2mu->Add(histm2e2mu_ZZ);
-  stackM2e2mu->Add(histm2e2mu_h126);
-  //stackM2e2mu->Add(histm2e2mu_h350);
-
-//  plotYmax = 50;
-
-  helper->draw7p8Plot(stackM2e2mu,histm2e2mu_dataE,leg,CP,pngPlotDir+"/m2e2mu_"+Form("%.0f",plotXlow)+"_"+Form("%.0f",plotXhigh)+".png",
-		      xAxisLabel_m2e2mu,yAxisLabel,lumi_7,lumi_8,plotXlow,plotXhigh,plotYmax);
-  helper->draw7p8Plot(stackM2e2mu,histm2e2mu_dataE,leg,CP,epsPlotDir+"/m2e2mu_"+Form("%.0f",plotXlow)+"_"+Form("%.0f",plotXhigh)+".eps",
-		      xAxisLabel_m2e2mu,yAxisLabel,lumi_7,lumi_8,plotXlow,plotXhigh,plotYmax);
-
-//  plotYmax = 0;
+  std::cout << " ======================================== " << std::endl;
+  std::cout << "2e2mu :" << std::endl;
+  std::cout << " Data:  " << histm2e2mu_data_zoom_integral << " +/- " << histm2e2mu_data_zoom_integralerr << "; Entries: " << histm2e2mu_data_zoom_entries << std::endl;
+  std::cout << " ZZ:    " << histm2e2mu_ZZ_zoom_integral << " +/- " << histm2e2mu_ZZ_zoom_integralerr << "; Entries: " << histm2e2mu_ZZ_zoom_entries << std::endl;
+  std::cout << " ZX:    " << histm2e2mu_ZX_zoom_integral << " +/- " << histm2e2mu_ZX_zoom_integralerr << std::endl;
+  std::cout << " mH126: " << histm2e2mu_h126_zoom_integral << " +/- " << histm2e2mu_h126_zoom_integralerr << "; Entries: " << histm2e2mu_h126_zoom_entries << std::endl;
+  std::cout << " ======================================== " << std::endl;
 
   return 0;
 
