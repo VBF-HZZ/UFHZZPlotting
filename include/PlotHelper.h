@@ -2044,7 +2044,7 @@ PlotHelper::draw7p8Plot(THStack *stack, TGraphAsymmErrors *gr, TLegend *leg, TLa
   TCanvas *c = new TCanvas("c","c",canvasX,canvasY);
   c->cd();
   if(yMax != 999) stack->SetMaximum(yMax);
-  stack->Draw();
+  stack->Draw("HIST");
   setStackStyle(stack,xTitle,yTitle);
   if(xLow != 999 && xHigh != 999) stack->GetXaxis()->SetRangeUser(xLow,xHigh);
   gr->Draw("pSAME");
@@ -2067,7 +2067,7 @@ PlotHelper::draw7p8Plot(THStack *stack,TH1F* gr, TLegend *leg, TLatex *latex,TSt
   TCanvas *c = new TCanvas("c","c",canvasX,canvasY);
   c->cd();
   if(yMax != 999) stack->SetMaximum(yMax);
-  stack->Draw();
+  stack->Draw("HIST");
   if(xLow != 999 && xHigh != 999) stack->GetXaxis()->SetRangeUser(xLow,xHigh);
   setStackStyle(stack,xTitle,yTitle);
   gr->Draw("e1pSAME");
