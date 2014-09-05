@@ -226,12 +226,12 @@ int main(int argc, char* argv[]){
   Collection *Cdata_7      = new Collection("Data",fileDir_7+ "/Data_7TeV.root"            ,treeName_data_7,1,true,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
 
   // 8 TeV
-  Collection *CSMH126_8    = new Collection("mH126",fileDir_8+ "/mH_126_SMH.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *CggH126_8    = new Collection("mH126",fileDir_8+ "/mH_126_ggH_powheg15.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *CVBF126_8    = new Collection("mH126",fileDir_8+ "/mH_126_VBF.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *CTTH126_8    = new Collection("mH126",fileDir_8+ "/mH_126_TTH.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *CWH126_8    = new Collection("mH126",fileDir_8+ "/mH_126_WH.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
-  Collection *CZH126_8    = new Collection("mH126",fileDir_8+ "/mH_126_ZH.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *CSMH126_8    = new Collection("mH126_SMH",fileDir_8+ "/mH_126_SMH.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut,0.00572894);
+  Collection *CggH126_8    = new Collection("mH126_ggH",fileDir_8+ "/mH_126_ggH_powheg15.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *CVBF126_8    = new Collection("mH126_VBF",fileDir_8+ "/mH_126_VBF.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut, 1.00886283);
+  Collection *CTTH126_8    = new Collection("mH126_TTH",fileDir_8+ "/mH_126_TTH.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *CWH126_8    = new Collection("mH126_WH",fileDir_8+ "/mH_126_WH.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *CZH126_8    = new Collection("mH126_ZH",fileDir_8+ "/mH_126_ZH.root"     ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *CggH350_8    = new Collection("mH350ggH",fileDir_8+ "/mH_350_ggH.root"  ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *CVBF350_8    = new Collection("mH350VBF",fileDir_8+ "/mH_350_VBF.root"  ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *Czz4mu_8     = new Collection("ZZ4mu",fileDir_8+ "/ZZ_4mu.root"         ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
@@ -670,7 +670,131 @@ int main(int argc, char* argv[]){
   std::cout << " mH126: " << histm2e2mu_h126_zoom_integral << " +/- " << histm2e2mu_h126_zoom_integralerr << "; Entries: " << histm2e2mu_h126_zoom_entries << std::endl;
   std::cout << " ======================================== " << std::endl;
 
+
+  // print collections
+  std::vector<double> yCSMH126_8 = helper->getCollectionYield(CSMH126_8, massZ1Cut, massZ2Cut, plotXlow_zoom, plotXhigh_zoom);
+  std::cout << " ======================================== " << std::endl;
+  std::cout << CSMH126_8->getName() << " [" << plotXlow_zoom << "," << plotXhigh_zoom << "] " << endl;
+  std::cout << "4l:     Events " << yCSMH126_8.at(0) << "; Entries " << yCSMH126_8.at(4) << endl;
+  std::cout << "4mu:    Events " << yCSMH126_8.at(1) << "; Entries " << yCSMH126_8.at(5) << endl;
+  std::cout << "4e:     Events " << yCSMH126_8.at(2) << "; Entries " << yCSMH126_8.at(6) << endl;
+  std::cout << "2e2mu:  Events " << yCSMH126_8.at(3) << "; Entries " << yCSMH126_8.at(7) << endl;
+  std::cout << " ======================================== " << std::endl;
+
+  std::vector<double> yCVBF126_8 = helper->getCollectionYield(CVBF126_8, massZ1Cut, massZ2Cut, plotXlow_zoom, plotXhigh_zoom);
+  std::cout << " ======================================== " << std::endl;
+  std::cout << CVBF126_8->getName() << " [" << plotXlow_zoom << "," << plotXhigh_zoom << "] " << endl;
+  std::cout << "4l:     Events " << yCVBF126_8.at(0) << "; Entries " << yCVBF126_8.at(4) << endl;
+  std::cout << "4mu:    Events " << yCVBF126_8.at(1) << "; Entries " << yCVBF126_8.at(5) << endl;
+  std::cout << "4e:     Events " << yCVBF126_8.at(2) << "; Entries " << yCVBF126_8.at(6) << endl;
+  std::cout << "2e2mu:  Events " << yCVBF126_8.at(3) << "; Entries " << yCVBF126_8.at(7) << endl;
+  std::cout << " ======================================== " << std::endl;
+
+  std::vector<double> yCTTH126_8 = helper->getCollectionYield(CTTH126_8, massZ1Cut, massZ2Cut, plotXlow_zoom, plotXhigh_zoom);
+  std::cout << " ======================================== " << std::endl;
+  std::cout << CTTH126_8->getName() << " [" << plotXlow_zoom << "," << plotXhigh_zoom << "] " << endl;
+  std::cout << "4l:     Events " << yCTTH126_8.at(0) << "; Entries " << yCTTH126_8.at(4) << endl;
+  std::cout << "4mu:    Events " << yCTTH126_8.at(1) << "; Entries " << yCTTH126_8.at(5) << endl;
+  std::cout << "4e:     Events " << yCTTH126_8.at(2) << "; Entries " << yCTTH126_8.at(6) << endl;
+  std::cout << "2e2mu:  Events " << yCTTH126_8.at(3) << "; Entries " << yCTTH126_8.at(7) << endl;
+  std::cout << " ======================================== " << std::endl;
+
+  std::vector<double> yCWH126_8 = helper->getCollectionYield(CWH126_8, massZ1Cut, massZ2Cut, plotXlow_zoom, plotXhigh_zoom);
+  std::cout << " ======================================== " << std::endl;
+  std::cout << CWH126_8->getName() << " [" << plotXlow_zoom << "," << plotXhigh_zoom << "] " << endl;
+  std::cout << "4l:     Events " << yCWH126_8.at(0) << "; Entries " << yCWH126_8.at(4) << endl;
+  std::cout << "4mu:    Events " << yCWH126_8.at(1) << "; Entries " << yCWH126_8.at(5) << endl;
+  std::cout << "4e:     Events " << yCWH126_8.at(2) << "; Entries " << yCWH126_8.at(6) << endl;
+  std::cout << "2e2mu:  Events " << yCWH126_8.at(3) << "; Entries " << yCWH126_8.at(7) << endl;
+  std::cout << " ======================================== " << std::endl;
+
+
+  std::vector<double> yCZH126_8 = helper->getCollectionYield(CZH126_8, massZ1Cut, massZ2Cut, plotXlow_zoom, plotXhigh_zoom);
+  std::cout << " ======================================== " << std::endl;
+  std::cout << CZH126_8->getName() << " [" << plotXlow_zoom << "," << plotXhigh_zoom << "] " << endl;
+  std::cout << "4l:     Events " << yCZH126_8.at(0) << "; Entries " << yCZH126_8.at(4) << endl;
+  std::cout << "4mu:    Events " << yCZH126_8.at(1) << "; Entries " << yCZH126_8.at(5) << endl;
+  std::cout << "4e:     Events " << yCZH126_8.at(2) << "; Entries " << yCZH126_8.at(6) << endl;
+  std::cout << "2e2mu:  Events " << yCZH126_8.at(3) << "; Entries " << yCZH126_8.at(7) << endl;
+  std::cout << " ======================================== " << std::endl;
+
+  std::vector<double> yCzz4e_8 = helper->getCollectionYield(Czz4e_8, massZ1Cut, massZ2Cut, plotXlow_zoom, plotXhigh_zoom);
+  std::cout << " ======================================== " << std::endl;
+  std::cout << Czz4e_8->getName() << " [" << plotXlow_zoom << "," << plotXhigh_zoom << "] " << endl;
+  std::cout << "4l:     Events " << yCzz4e_8.at(0) << "; Entries " << yCzz4e_8.at(4) << endl;
+  std::cout << "4mu:    Events " << yCzz4e_8.at(1) << "; Entries " << yCzz4e_8.at(5) << endl;
+  std::cout << "4e:     Events " << yCzz4e_8.at(2) << "; Entries " << yCzz4e_8.at(6) << endl;
+  std::cout << "2e2mu:  Events " << yCzz4e_8.at(3) << "; Entries " << yCzz4e_8.at(7) << endl;
+  std::cout << " ======================================== " << std::endl;
+
+  std::vector<double> yCzz4mu_8 = helper->getCollectionYield(Czz4mu_8, massZ1Cut, massZ2Cut, plotXlow_zoom, plotXhigh_zoom);
+  std::cout << " ======================================== " << std::endl;
+  std::cout << Czz4mu_8->getName() << " [" << plotXlow_zoom << "," << plotXhigh_zoom << "] " << endl;
+  std::cout << "4l:     Events " << yCzz4mu_8.at(0) << "; Entries " << yCzz4mu_8.at(4) << endl;
+  std::cout << "4mu:    Events " << yCzz4mu_8.at(1) << "; Entries " << yCzz4mu_8.at(5) << endl;
+  std::cout << "4e:     Events " << yCzz4mu_8.at(2) << "; Entries " << yCzz4mu_8.at(6) << endl;
+  std::cout << "2e2mu:  Events " << yCzz4mu_8.at(3) << "; Entries " << yCzz4mu_8.at(7) << endl;
+  std::cout << " ======================================== " << std::endl;
+
+  std::vector<double> yCzz4tau_8 = helper->getCollectionYield(Czz4tau_8, massZ1Cut, massZ2Cut, plotXlow_zoom, plotXhigh_zoom);
+  std::cout << " ======================================== " << std::endl;
+  std::cout << Czz4tau_8->getName() << " [" << plotXlow_zoom << "," << plotXhigh_zoom << "] " << endl;
+  std::cout << "4l:     Events " << yCzz4tau_8.at(0) << "; Entries " << yCzz4tau_8.at(4) << endl;
+  std::cout << "4mu:    Events " << yCzz4tau_8.at(1) << "; Entries " << yCzz4tau_8.at(5) << endl;
+  std::cout << "4e:     Events " << yCzz4tau_8.at(2) << "; Entries " << yCzz4tau_8.at(6) << endl;
+  std::cout << "2e2mu:  Events " << yCzz4tau_8.at(3) << "; Entries " << yCzz4tau_8.at(7) << endl;
+  std::cout << " ======================================== " << std::endl;
+
+  std::vector<double> yCzz2e2mu_8 = helper->getCollectionYield(Czz2e2mu_8, massZ1Cut, massZ2Cut, plotXlow_zoom, plotXhigh_zoom);
+  std::cout << " ======================================== " << std::endl;
+  std::cout << Czz2e2mu_8->getName() << " [" << plotXlow_zoom << "," << plotXhigh_zoom << "] " << endl;
+  std::cout << "4l:     Events " << yCzz2e2mu_8.at(0) << "; Entries " << yCzz2e2mu_8.at(4) << endl;
+  std::cout << "4mu:    Events " << yCzz2e2mu_8.at(1) << "; Entries " << yCzz2e2mu_8.at(5) << endl;
+  std::cout << "4e:     Events " << yCzz2e2mu_8.at(2) << "; Entries " << yCzz2e2mu_8.at(6) << endl;
+  std::cout << "2e2mu:  Events " << yCzz2e2mu_8.at(3) << "; Entries " << yCzz2e2mu_8.at(7) << endl;
+  std::cout << " ======================================== " << std::endl;
+
+  std::vector<double> yCzz2e2tau_8 = helper->getCollectionYield(Czz2e2tau_8, massZ1Cut, massZ2Cut, plotXlow_zoom, plotXhigh_zoom);
+  std::cout << " ======================================== " << std::endl;
+  std::cout << Czz2e2tau_8->getName() << " [" << plotXlow_zoom << "," << plotXhigh_zoom << "] " << endl;
+  std::cout << "4l:     Events " << yCzz2e2tau_8.at(0) << "; Entries " << yCzz2e2tau_8.at(4) << endl;
+  std::cout << "4mu:    Events " << yCzz2e2tau_8.at(1) << "; Entries " << yCzz2e2tau_8.at(5) << endl;
+  std::cout << "4e:     Events " << yCzz2e2tau_8.at(2) << "; Entries " << yCzz2e2tau_8.at(6) << endl;
+  std::cout << "2e2mu:  Events " << yCzz2e2tau_8.at(3) << "; Entries " << yCzz2e2tau_8.at(7) << endl;
+  std::cout << " ======================================== " << std::endl;
+
+  std::vector<double> yCzz2mu2tau_8 = helper->getCollectionYield(Czz2mu2tau_8, massZ1Cut, massZ2Cut, plotXlow_zoom, plotXhigh_zoom);
+  std::cout << " ======================================== " << std::endl;
+  std::cout << Czz2mu2tau_8->getName() << " [" << plotXlow_zoom << "," << plotXhigh_zoom << "] " << endl;
+  std::cout << "4l:     Events " << yCzz2mu2tau_8.at(0) << "; Entries " << yCzz2mu2tau_8.at(4) << endl;
+  std::cout << "4mu:    Events " << yCzz2mu2tau_8.at(1) << "; Entries " << yCzz2mu2tau_8.at(5) << endl;
+  std::cout << "4e:     Events " << yCzz2mu2tau_8.at(2) << "; Entries " << yCzz2mu2tau_8.at(6) << endl;
+  std::cout << "2e2mu:  Events " << yCzz2mu2tau_8.at(3) << "; Entries " << yCzz2mu2tau_8.at(7) << endl;
+  std::cout << " ======================================== " << std::endl;
+
+  std::vector<double> yCggzz4l_8 = helper->getCollectionYield(Cggzz4l_8, massZ1Cut, massZ2Cut, plotXlow_zoom, plotXhigh_zoom);
+  std::cout << " ======================================== " << std::endl;
+  std::cout << Cggzz4l_8->getName() << " [" << plotXlow_zoom << "," << plotXhigh_zoom << "] " << endl;
+  std::cout << "4l:     Events " << yCggzz4l_8.at(0) << "; Entries " << yCggzz4l_8.at(4) << endl;
+  std::cout << "4mu:    Events " << yCggzz4l_8.at(1) << "; Entries " << yCggzz4l_8.at(5) << endl;
+  std::cout << "4e:     Events " << yCggzz4l_8.at(2) << "; Entries " << yCggzz4l_8.at(6) << endl;
+  std::cout << "2e2mu:  Events " << yCggzz4l_8.at(3) << "; Entries " << yCggzz4l_8.at(7) << endl;
+  std::cout << " ======================================== " << std::endl;
+
+  std::vector<double> yCggzz2l2l_8 = helper->getCollectionYield(Cggzz2l2l_8, massZ1Cut, massZ2Cut, plotXlow_zoom, plotXhigh_zoom);
+  std::cout << " ======================================== " << std::endl;
+  std::cout << Cggzz2l2l_8->getName() << " [" << plotXlow_zoom << "," << plotXhigh_zoom << "] " << endl;
+  std::cout << "4l:     Events " << yCggzz2l2l_8.at(0) << "; Entries " << yCggzz2l2l_8.at(4) << endl;
+  std::cout << "4mu:    Events " << yCggzz2l2l_8.at(1) << "; Entries " << yCggzz2l2l_8.at(5) << endl;
+  std::cout << "4e:     Events " << yCggzz2l2l_8.at(2) << "; Entries " << yCggzz2l2l_8.at(6) << endl;
+  std::cout << "2e2mu:  Events " << yCggzz2l2l_8.at(3) << "; Entries " << yCggzz2l2l_8.at(7) << endl;
+  std::cout << " ======================================== " << std::endl; 
+ 
+
+
   return 0;
+
+
 
 }
 

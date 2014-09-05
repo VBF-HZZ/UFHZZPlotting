@@ -1724,6 +1724,7 @@ PlotHelper::printCollectionYield(Collection *myCol, ofstream &out, double mZ1Low
 
 
   double nEvents_4l=0,nEvents_4e=0,nEvents_4mu=0,nEvents_2e2mu=0;
+  double Entries_4l=0,Entries_4e=0,Entries_4mu=0,Entries_2e2mu=0;
 
   for(unsigned int i = 0; i < myCol->mass4lPair.second.size(); i++)
     {
@@ -1732,18 +1733,18 @@ PlotHelper::printCollectionYield(Collection *myCol, ofstream &out, double mZ1Low
       if(myCol->mass4lPair.second[i] < m4lLow) continue;
       if(myCol->mass4lPair.second[i] > m4lHigh) continue;
       
-      nEvents_4l += myCol->weight[i];
-      if(myCol->mass4ePair.second[i] > 0    ) nEvents_4e    += myCol->weight[i];
-      if(myCol->mass4muPair.second[i] > 0   ) nEvents_4mu   += myCol->weight[i];
-      if(myCol->mass2e2muPair.second[i] > 0 ) nEvents_2e2mu += myCol->weight[i];
+      nEvents_4l += myCol->weight[i]; Entries_4l+=1.0;
+      if(myCol->mass4ePair.second[i] > 0    ) { nEvents_4e    += myCol->weight[i]; Entries_4e+=1.; }
+      if(myCol->mass4muPair.second[i] > 0   ) { nEvents_4mu   += myCol->weight[i]; Entries_4mu+=1.; }
+      if(myCol->mass2e2muPair.second[i] > 0 ) { nEvents_2e2mu += myCol->weight[i]; Entries_2e2mu+=1.; }
 
     }
 
   out << myCol->getName() << " [" << m4lLow << "," << m4lHigh << "] " << endl;
-  out << "4l:     " << nEvents_4l << endl;
-  out << "4mu:    " << nEvents_4mu << endl;
-  out << "4e:     " << nEvents_4e << endl;
-  out << "2e2mu:  " << nEvents_2e2mu << endl;
+  out << "4l:     " << nEvents_4l << "; Entries " << Entries_4l << endl;
+  out << "4mu:    " << nEvents_4mu << "; Entries " << Entries_4mu << endl;
+  out << "4e:     " << nEvents_4e << "; Entries " << Entries_4e << endl;
+  out << "2e2mu:  " << nEvents_2e2mu << "; Entries " << Entries_2e2mu << endl;
   out << nEvents_4l << "/ " << nEvents_4e << "/ " << nEvents_4mu << "/ " << nEvents_2e2mu << endl;
   out << "------------------ " << endl;
   
@@ -1756,6 +1757,7 @@ PlotHelper::printCollectionYield(MergedCollection *myCol, ofstream &out, double 
 {
 
   double nEvents_4l=0,nEvents_4e=0,nEvents_4mu=0,nEvents_2e2mu=0;
+  double Entries_4l=0,Entries_4e=0,Entries_4mu=0,Entries_2e2mu=0;
 
   for(unsigned int i = 0; i < myCol->mass4lPair.second.size(); i++)
     {
@@ -1764,18 +1766,18 @@ PlotHelper::printCollectionYield(MergedCollection *myCol, ofstream &out, double 
       if(myCol->mass4lPair.second[i] < m4lLow) continue;
       if(myCol->mass4lPair.second[i] > m4lHigh) continue;
       
-      nEvents_4l += myCol->weight[i];
-      if(myCol->mass4ePair.second[i] > 0    ) nEvents_4e    += myCol->weight[i];
-      if(myCol->mass4muPair.second[i] > 0   ) nEvents_4mu   += myCol->weight[i];
-      if(myCol->mass2e2muPair.second[i] > 0 ) nEvents_2e2mu += myCol->weight[i];
+      nEvents_4l += myCol->weight[i]; Entries_4l+=1.0;
+      if(myCol->mass4ePair.second[i] > 0    ) { nEvents_4e    += myCol->weight[i]; Entries_4e+=1.; }
+      if(myCol->mass4muPair.second[i] > 0   ) { nEvents_4mu   += myCol->weight[i]; Entries_4mu+=1.; }
+      if(myCol->mass2e2muPair.second[i] > 0 ) { nEvents_2e2mu += myCol->weight[i]; Entries_2e2mu+=1.; }
 
     }
 
   out << myCol->getName() << " [" << m4lLow << "," << m4lHigh << "] " << endl;
-  out << "4l:     " << nEvents_4l << endl;
-  out << "4mu:    " << nEvents_4mu << endl;
-  out << "4e:     " << nEvents_4e << endl;
-  out << "2e2mu:  " << nEvents_2e2mu << endl;
+  out << "4l:     " << nEvents_4l << "; Entries " << Entries_4l << endl;
+  out << "4mu:    " << nEvents_4mu << "; Entries " << Entries_4mu << endl;
+  out << "4e:     " << nEvents_4e << "; Entries " << Entries_4e << endl;
+  out << "2e2mu:  " << nEvents_2e2mu << "; Entries " << Entries_2e2mu << endl;
   out << nEvents_4l << "/ " << nEvents_4e << "/ " << nEvents_4mu << "/ " << nEvents_2e2mu << endl;
   out << "------------------ " << endl;
 
