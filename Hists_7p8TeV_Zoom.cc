@@ -184,8 +184,8 @@ int main(int argc, char* argv[]){
   gStyle->SetPadBottomMargin(0.13);
 
 
-  double scale126_4e = 1;
-  double scale126_4mu = 1;
+  double scale126_4e = 1.;
+  double scale126_4mu = 1.;
   double scale126_2e2mu = 1.;
   double scale126_4l = 1.;
 
@@ -194,21 +194,20 @@ int main(int argc, char* argv[]){
   //scale126_2e2mu = 1.53+2.22227*lumi_8/5.261;
   //scale126_4l = scale126_4e+scale126_4mu+scale126_2e2mu;
 
-  //if (Run==7) 
-  //{
-  //  scale126_4e *= lumi_7/(lumi_8+lumi_7);
-  //  scale126_4mu *= lumi_7/(lumi_8+lumi_7);
-  //  scale126_2e2mu *= lumi_7/(lumi_8+lumi_7);
-  //  scale126_4l *= lumi_7/(lumi_8+lumi_7);
-  //}
-  //else if (Run==8)
-  //{
-  //  scale126_4e *= lumi_8/(lumi_8+lumi_7);
-  //  scale126_4mu *= lumi_8/(lumi_8+lumi_7);
-  //  scale126_2e2mu *= lumi_8/(lumi_8+lumi_7);
-  //  scale126_4l *= lumi_8/(lumi_8+lumi_7);
-  //}
-
+  if (Run==7) 
+  {
+    scale126_4e = lumi_7/lumi_8;
+    scale126_4mu = lumi_7/lumi_8;
+    scale126_2e2mu = lumi_7/lumi_8;
+    scale126_4l = lumi_7/lumi_8;
+  }
+  else if (Run==78)
+  {
+    scale126_4e = (lumi_8+lumi_7)/lumi_8;
+    scale126_4mu = (lumi_8+lumi_7/lumi_8);
+    scale126_2e2mu = (lumi_8+lumi_7)/lumi_8;
+    scale126_4l = (lumi_8+lumi_7)/lumi_8;
+  }
 
   // 7 TeV
   //Collection *CggH126_7    = new Collection("mH126",fileDir_8+ "/mH_126_ggH.root"     ,treeName,lumi_7,false,massZ1Cut,massZ2Cut,m4lCut);
@@ -240,6 +239,12 @@ int main(int argc, char* argv[]){
   Collection *Czz4tau_8    = new Collection("ZZ4tau",fileDir_8+ "/ZZto4tau.root"      ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *Czz2e2tau_8  = new Collection("ZZ2e2tau",fileDir_8+ "/ZZto2e2tau.root"  ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   Collection *Czz2mu2tau_8 = new Collection("ZZ2mu2tau",fileDir_8+ "/ZZto2mu2tau.root" ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Czz4mu_ext_8 = new Collection("ZZ4mu_ext",fileDir_8+ "/ZZTo4mu_Ext_8TeV.root"         ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Czz4e_ext_8 = new Collection("ZZ4e_ext",fileDir_8+ "/ZZTo4e_Ext_8TeV.root"         ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Czz2e2mu_ext_8 = new Collection("ZZ2e2mu_ext",fileDir_8+ "/ZZTo2e2mu_Ext_8TeV.root"         ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Czz4tau_ext_8 = new Collection("ZZ4tau_ext",fileDir_8+ "/ZZTo4tau_Ext_8TeV.root"         ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Czz2mu2tau_ext_8 = new Collection("ZZ2mu2tau_ext",fileDir_8+ "/ZZTo2mu2tau_Ext_8TeV.root"         ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
+  Collection *Czz2e2tau_ext_8 = new Collection("ZZ2e2tau_ext",fileDir_8+ "/ZZTo2e2tau_Ext_8TeV.root"         ,treeName,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   //Collection *Cggzz4l_8    = new Collection("ggZZ4l",fileDir_7+ "/ggZZ_4l.root"       ,treeName_7,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   //Collection *Cggzz2l2l_8  = new Collection("ggZZ2l2l",fileDir_7+ "/ggZZ_2e2mu.root"  ,treeName_7,lumi_8,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
   //Collection *Cggzz4l_8    = new Collection("ggZZ4l",fileDir_7+ "/ggZZ_4l.root"       ,treeName_7,lumi_8*1.18,false,massZ1Cut,massZ2Cut,ptMuCut, ptElCut,m4lCut);
@@ -255,22 +260,29 @@ int main(int argc, char* argv[]){
   if (Run==7||Run==78) cvZZ.push_back(Czz4mu_7);
   if (Run==7||Run==78) cvZZ.push_back(Czz4e_7);
   if (Run==7||Run==78) cvZZ.push_back(Czz2e2mu_7);
-  if (Run==8||Run==78) cvZZ.push_back(Czz4mu_8);
-  if (Run==8||Run==78) cvZZ.push_back(Czz4e_8);
-  if (Run==8||Run==78) cvZZ.push_back(Czz2e2mu_8);
+  //if (Run==8||Run==78) cvZZ.push_back(Czz4mu_8);
+  //if (Run==8||Run==78) cvZZ.push_back(Czz4e_8);
+  //if (Run==8||Run==78) cvZZ.push_back(Czz2e2mu_8);
   //MergedCollection *MCZZ_noTaus = new MergedCollection("ZZnoTaus",cvZZ);
   if (Run==7||Run==78) cvZZ.push_back(Czz4tau_7);
   if (Run==7||Run==78) cvZZ.push_back(Czz2e2tau_7);
   if (Run==7||Run==78) cvZZ.push_back(Czz2mu2tau_7);
-  if (Run==8||Run==78) cvZZ.push_back(Czz4tau_8);
-  if (Run==8||Run==78) cvZZ.push_back(Czz2e2tau_8);
-  if (Run==8||Run==78) cvZZ.push_back(Czz2mu2tau_8);
+  //if (Run==8||Run==78) cvZZ.push_back(Czz4tau_8);
+  //if (Run==8||Run==78) cvZZ.push_back(Czz2e2tau_8);
+  //if (Run==8||Run==78) cvZZ.push_back(Czz2mu2tau_8);
   //MergedCollection *MCZZ_taus = new MergedCollection("ZZwithTaus",cvZZ);
   if (Run==7||Run==78) cvZZ.push_back(Cggzz4l_7);
   if (Run==7||Run==78) cvZZ.push_back(Cggzz2l2l_7);
   if (Run==8||Run==78) cvZZ.push_back(Cggzz4l_8);
   if (Run==8||Run==78) cvZZ.push_back(Cggzz2l2l_8);
   //if (Run==8||Run==78) cvZZ.push_back(CZZJetsTo4L_8);
+
+  if (Run==8||Run==78) cvZZ.push_back(Czz4mu_ext_8);
+  if (Run==8||Run==78) cvZZ.push_back(Czz4e_ext_8);
+  if (Run==8||Run==78) cvZZ.push_back(Czz2e2mu_ext_8);
+  if (Run==8||Run==78) cvZZ.push_back(Czz4tau_ext_8);
+  if (Run==8||Run==78) cvZZ.push_back(Czz2e2tau_ext_8);
+  if (Run==8||Run==78) cvZZ.push_back(Czz2mu2tau_ext_8);
 
   if (Run==7||Run==78) cvggzz.push_back(Cggzz4l_7);
   if (Run==7||Run==78) cvggzz.push_back(Cggzz2l2l_7);
@@ -402,6 +414,7 @@ int main(int argc, char* argv[]){
   helper->fillHistFromVariable(MCH350,histm4l_h350_zoom,"mass4l");
   histm4l_h126_zoom_entries = helper->fillHistFromVariable(MCH126,histm4l_h126_zoom,"mass4l");
   //histm4l_h126_zoom->Scale(scale126_4l/histm4l_h126_zoom->Integral());
+  histm4l_h126_zoom->Scale(scale126_4l);
 
   histm4l_data_zoom_integral = histm4l_data_zoom->IntegralAndError(1, histm4l_data_zoom->GetNbinsX(), histm4l_data_zoom_integralerr);
   histm4l_ZZ_zoom_integral = histm4l_ZZ_zoom->IntegralAndError(1, histm4l_ZZ_zoom->GetNbinsX(), histm4l_ZZ_zoom_integralerr);
@@ -476,6 +489,7 @@ int main(int argc, char* argv[]){
   helper->fillHistFromVariable(MCH350,histm4e_h350_zoom,"mass4e");
   histm4e_h126_zoom_entries = helper->fillHistFromVariable(MCH126,histm4e_h126_zoom,"mass4e");
   //histm4e_h126_zoom->Scale(scale126_4e/histm4e_h126_zoom->Integral());
+  histm4e_h126_zoom->Scale(scale126_4e);
 
   histm4e_data_zoom_integral = histm4e_data_zoom->IntegralAndError(1, histm4e_data_zoom->GetNbinsX(), histm4e_data_zoom_integralerr);
   histm4e_ZZ_zoom_integral = histm4e_ZZ_zoom->IntegralAndError(1, histm4e_ZZ_zoom->GetNbinsX(), histm4e_ZZ_zoom_integralerr);
@@ -535,6 +549,7 @@ int main(int argc, char* argv[]){
   helper->fillHistFromVariable(MCH350,histm4mu_h350_zoom,"mass4mu");
   histm4mu_h126_zoom_entries = helper->fillHistFromVariable(MCH126,histm4mu_h126_zoom,"mass4mu");
   //histm4mu_h126_zoom->Scale(scale126_4mu/histm4mu_h126_zoom->Integral());
+  histm4mu_h126_zoom->Scale(scale126_4mu);
 
 
   histm4mu_data_zoom_integral = histm4mu_data_zoom->IntegralAndError(1, histm4mu_data_zoom->GetNbinsX(), histm4mu_data_zoom_integralerr);
@@ -596,6 +611,7 @@ int main(int argc, char* argv[]){
   helper->fillHistFromVariable(MCH350,histm2e2mu_h350_zoom,"mass2e2mu");
   histm2e2mu_h126_zoom_entries = helper->fillHistFromVariable(MCH126,histm2e2mu_h126_zoom,"mass2e2mu");
   //histm2e2mu_h126_zoom->Scale(scale126_2e2mu/histm2e2mu_h126_zoom->Integral());
+  histm2e2mu_h126_zoom->Scale(scale126_2e2mu);
 
 
   histm2e2mu_data_zoom_integral = histm2e2mu_data_zoom->IntegralAndError(1, histm2e2mu_data_zoom->GetNbinsX(), histm2e2mu_data_zoom_integralerr);
@@ -789,7 +805,56 @@ int main(int argc, char* argv[]){
   std::cout << "4e:     Events " << yCggzz2l2l_8.at(2) << "; Entries " << yCggzz2l2l_8.at(6) << endl;
   std::cout << "2e2mu:  Events " << yCggzz2l2l_8.at(3) << "; Entries " << yCggzz2l2l_8.at(7) << endl;
   std::cout << " ======================================== " << std::endl; 
- 
+
+
+  std::vector<double> yCzz4e_ext_8 = helper->getCollectionYield(Czz4e_ext_8, massZ1Cut, massZ2Cut, plotXlow_zoom, plotXhigh_zoom);
+  std::cout << " ======================================== " << std::endl;
+  std::cout << Czz4e_ext_8->getName() << " [" << plotXlow_zoom << "," << plotXhigh_zoom << "] " << endl;
+  std::cout << "4l:     Events " << yCzz4e_ext_8.at(0) << "; Entries " << yCzz4e_ext_8.at(4) << endl;
+  std::cout << "4mu:    Events " << yCzz4e_ext_8.at(1) << "; Entries " << yCzz4e_ext_8.at(5) << endl;
+  std::cout << "4e:     Events " << yCzz4e_ext_8.at(2) << "; Entries " << yCzz4e_ext_8.at(6) << endl;
+  std::cout << "2e2mu:  Events " << yCzz4e_ext_8.at(3) << "; Entries " << yCzz4e_ext_8.at(7) << endl;
+  std::cout << " ======================================== " << std::endl;
+  std::vector<double> yCzz4mu_ext_8 = helper->getCollectionYield(Czz4mu_ext_8, massZ1Cut, massZ2Cut, plotXlow_zoom, plotXhigh_zoom);
+  std::cout << " ======================================== " << std::endl;
+  std::cout << Czz4mu_ext_8->getName() << " [" << plotXlow_zoom << "," << plotXhigh_zoom << "] " << endl;
+  std::cout << "4l:     Events " << yCzz4mu_ext_8.at(0) << "; Entries " << yCzz4mu_ext_8.at(4) << endl;
+  std::cout << "4mu:    Events " << yCzz4mu_ext_8.at(1) << "; Entries " << yCzz4mu_ext_8.at(5) << endl;
+  std::cout << "4e:     Events " << yCzz4mu_ext_8.at(2) << "; Entries " << yCzz4mu_ext_8.at(6) << endl;
+  std::cout << "2e2mu:  Events " << yCzz4mu_ext_8.at(3) << "; Entries " << yCzz4mu_ext_8.at(7) << endl;
+  std::cout << " ======================================== " << std::endl;
+  std::vector<double> yCzz4tau_ext_8 = helper->getCollectionYield(Czz4tau_ext_8, massZ1Cut, massZ2Cut, plotXlow_zoom, plotXhigh_zoom);
+  std::cout << " ======================================== " << std::endl;
+  std::cout << Czz4tau_ext_8->getName() << " [" << plotXlow_zoom << "," << plotXhigh_zoom << "] " << endl;
+  std::cout << "4l:     Events " << yCzz4tau_ext_8.at(0) << "; Entries " << yCzz4tau_ext_8.at(4) << endl;
+  std::cout << "4mu:    Events " << yCzz4tau_ext_8.at(1) << "; Entries " << yCzz4tau_ext_8.at(5) << endl;
+  std::cout << "4e:     Events " << yCzz4tau_ext_8.at(2) << "; Entries " << yCzz4tau_ext_8.at(6) << endl;
+  std::cout << "2e2mu:  Events " << yCzz4tau_ext_8.at(3) << "; Entries " << yCzz4tau_ext_8.at(7) << endl;
+  std::cout << " ======================================== " << std::endl;
+  std::vector<double> yCzz2e2mu_ext_8 = helper->getCollectionYield(Czz2e2mu_ext_8, massZ1Cut, massZ2Cut, plotXlow_zoom, plotXhigh_zoom);
+  std::cout << " ======================================== " << std::endl;
+  std::cout << Czz2e2mu_ext_8->getName() << " [" << plotXlow_zoom << "," << plotXhigh_zoom << "] " << endl;
+  std::cout << "4l:     Events " << yCzz2e2mu_ext_8.at(0) << "; Entries " << yCzz2e2mu_ext_8.at(4) << endl;
+  std::cout << "4mu:    Events " << yCzz2e2mu_ext_8.at(1) << "; Entries " << yCzz2e2mu_ext_8.at(5) << endl;
+  std::cout << "4e:     Events " << yCzz2e2mu_ext_8.at(2) << "; Entries " << yCzz2e2mu_ext_8.at(6) << endl;
+  std::cout << "2e2mu:  Events " << yCzz2e2mu_ext_8.at(3) << "; Entries " << yCzz2e2mu_ext_8.at(7) << endl;
+  std::cout << " ======================================== " << std::endl;
+  std::vector<double> yCzz2e2tau_ext_8 = helper->getCollectionYield(Czz2e2tau_ext_8, massZ1Cut, massZ2Cut, plotXlow_zoom, plotXhigh_zoom);
+  std::cout << " ======================================== " << std::endl;
+  std::cout << Czz2e2tau_ext_8->getName() << " [" << plotXlow_zoom << "," << plotXhigh_zoom << "] " << endl;
+  std::cout << "4l:     Events " << yCzz2e2tau_ext_8.at(0) << "; Entries " << yCzz2e2tau_ext_8.at(4) << endl;
+  std::cout << "4mu:    Events " << yCzz2e2tau_ext_8.at(1) << "; Entries " << yCzz2e2tau_ext_8.at(5) << endl;
+  std::cout << "4e:     Events " << yCzz2e2tau_ext_8.at(2) << "; Entries " << yCzz2e2tau_ext_8.at(6) << endl;
+  std::cout << "2e2mu:  Events " << yCzz2e2tau_ext_8.at(3) << "; Entries " << yCzz2e2tau_ext_8.at(7) << endl;
+  std::cout << " ======================================== " << std::endl;
+  std::vector<double> yCzz2mu2tau_ext_8 = helper->getCollectionYield(Czz2mu2tau_ext_8, massZ1Cut, massZ2Cut, plotXlow_zoom, plotXhigh_zoom);
+  std::cout << " ======================================== " << std::endl;
+  std::cout << Czz2mu2tau_ext_8->getName() << " [" << plotXlow_zoom << "," << plotXhigh_zoom << "] " << endl;
+  std::cout << "4l:     Events " << yCzz2mu2tau_ext_8.at(0) << "; Entries " << yCzz2mu2tau_ext_8.at(4) << endl;
+  std::cout << "4mu:    Events " << yCzz2mu2tau_ext_8.at(1) << "; Entries " << yCzz2mu2tau_ext_8.at(5) << endl;
+  std::cout << "4e:     Events " << yCzz2mu2tau_ext_8.at(2) << "; Entries " << yCzz2mu2tau_ext_8.at(6) << endl;
+  std::cout << "2e2mu:  Events " << yCzz2mu2tau_ext_8.at(3) << "; Entries " << yCzz2mu2tau_ext_8.at(7) << endl;
+  std::cout << " ======================================== " << std::endl;
 
 
   return 0;
